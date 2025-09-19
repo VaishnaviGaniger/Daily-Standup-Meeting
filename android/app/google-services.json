@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "595183160017",
+    "project_id": "dsm-project-7087e",
+    "storage_bucket": "dsm-project-7087e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:595183160017:android:f0a02d03cb76cba76f93f0",
+        "android_client_info": {
+          "package_name": "com.example.message_notifier"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4P0tRRkFCzIqlohCD37M8YwvVB2GaIKk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
