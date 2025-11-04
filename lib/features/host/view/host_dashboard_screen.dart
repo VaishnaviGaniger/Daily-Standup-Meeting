@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:message_notifier/features/host/view/host_notification_screen.dart';
-import 'package:message_notifier/features/host/view/host_profile_screen.dart';
-import 'package:message_notifier/features/host/view/meeting_update_screen.dart';
+import 'package:message_notifier/config/app_colors.dart';
+import 'package:message_notifier/features/host/view/host_dashboard_items_Screen.dart';
 import 'package:message_notifier/features/host/view/standup_history_host_screen.dart';
 import 'package:message_notifier/features/host/view/submit_daily_tasks_screen.dart';
 
@@ -16,10 +15,12 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
   int currentIndex = 0;
 
   final List<Widget> pages = [
-    MeetingUpdateScreen(),
+    HostDashboardHomeScreen(),
+
+    // MeetingUpdateScreen(),
     StandupHistoryHostScreen(),
-    HostNotificationScreen(),
-    HostProfileScreen(),
+    // HostNotificationScreen(),
+    // HostProfileScreen(),
   ];
 
   void onPageTapped(int index) {
@@ -39,9 +40,9 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF2E8B7F), // Teal 1 (same as login screen)
-              Color(0xFF1F5F5B), // Teal 2
-              Color(0xFF0D4F47), // Dark teal
+              AppColors.rich_teal,
+              AppColors.dark_teal,
+              AppColors.darkest_teal,
             ],
             stops: [0.0, 0.6, 1.0],
           ),
@@ -60,29 +61,29 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF2E8B7F), Color(0xFF1F5F5B)],
+          colors: [AppColors.rich_teal, AppColors.darkest_teal],
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF2E8B7F).withValues(alpha: 0.3),
+            color: const Color(0xFF2E8B7F).withValues(alpha: 0.2),
             blurRadius: 12,
             offset: const Offset(0, -4),
           ),
         ],
       ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(Icons.home, "Home", 0),
-              _buildNavItem(Icons.history, "History", 1),
-              _buildFloatingActionButton(),
-              _buildNavItem(Icons.notifications, "Notifications", 2),
-              _buildNavItem(Icons.person, "Profile", 3),
-            ],
-          ),
+      child: Padding(
+        // wraped with safearea --change
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavItem(Icons.home, "Home", 0),
+            _buildFloatingActionButton(),
+            _buildNavItem(Icons.history, "History", 1),
+
+            // _buildNavItem(Icons.notifications, "Notifications", 2),
+            // _buildNavItem(Icons.person, "Profile", 3),
+          ],
         ),
       ),
     );
@@ -99,13 +100,17 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
             duration: const Duration(milliseconds: 200),
             curve: Curves.easeInOut,
             transform: Matrix4.identity()..scale(isSelected ? 1.1 : 1.0),
-            child: Icon(icon, color: Colors.white, size: isSelected ? 28 : 24),
+            child: Icon(
+              icon,
+              color: AppColors.white,
+              size: isSelected ? 28 : 24,
+            ),
           ),
           const SizedBox(height: 4),
           AnimatedDefaultTextStyle(
             duration: const Duration(milliseconds: 200),
             style: TextStyle(
-              color: Colors.white,
+              color: AppColors.white,
               fontSize: isSelected ? 13 : 11,
               fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
             ),
@@ -122,7 +127,7 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const SubmitDailyTaskScreens(),
+            builder: (context) => const SubmitDailyTaskHostScreen(),
           ),
         );
       },
@@ -132,7 +137,7 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
         width: 62,
         height: 62,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.white,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(

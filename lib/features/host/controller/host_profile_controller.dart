@@ -14,12 +14,8 @@ class HostProfileController extends GetxController {
 
       final apiResponse = await ApiServices.hostProfile();
 
-      if (apiResponse != null) {
-        print(apiResponse);
-        hostProfile.value = apiResponse;
-      } else {
-        Get.snackbar('Error', 'Failed to load profile data');
-      }
+      print(apiResponse);
+      hostProfile.value = apiResponse;
     } catch (e) {
       errorMessage.value = 'Error: $e';
     } finally {

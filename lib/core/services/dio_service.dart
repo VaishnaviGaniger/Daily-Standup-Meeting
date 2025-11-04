@@ -10,8 +10,8 @@ class DioService {
     required Map<String, String> headers,
   }) async {
     try {
-      debugPrint('-----------------------------------------------');
-      debugPrint('GET METHOD URL : $url');
+      print('-----------------------------------------------');
+      print('GET METHOD URL : $url');
       final response = await _dio.get(url, options: Options(headers: headers));
       debugPrint('OUTPUT : ${response.data}');
       return ApiResponseModel(success: true, data: response.data);

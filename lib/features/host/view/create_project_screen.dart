@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:message_notifier/config/app_colors.dart';
 import 'package:message_notifier/features/host/controller/create_project_controller.dart';
 import 'package:message_notifier/features/host/model/create_project_model.dart';
 
@@ -22,13 +23,13 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
       appBar: AppBar(
         title: const Text(
           "Create Project",
-          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
+          style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.white),
         ),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: AppColors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -41,7 +42,7 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color(0xFF2E8B7F), // Rich teal
+              AppColors.rich_teal, // Rich teal
               Color(0xFF1F5F5B), // Darker teal
               Color(0xFF0D4F47), // Deepest teal
             ],
@@ -59,7 +60,7 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                   width: double.infinity,
                   padding: EdgeInsets.all(28),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.white,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
@@ -79,12 +80,14 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                             Container(
                               padding: EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: Color(0xFF2E8B7F).withValues(alpha: 0.1),
+                                color: AppColors.rich_teal.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
                                 Icons.folder_open,
-                                color: Color(0xFF2E8B7F),
+                                color: AppColors.rich_teal,
                                 size: 20,
                               ),
                             ),
@@ -94,7 +97,7 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xFF2E8B7F),
+                                color: AppColors.rich_teal,
                               ),
                             ),
                           ],
@@ -105,7 +108,7 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                         _buildInputField(
                           controller: projectnameController,
                           label: 'Project Name',
-                          hint: 'Enter a memorable project name',
+                          hint: 'Enter a project name',
                           icon: Icons.work_outline,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -115,8 +118,7 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                           },
                         ),
 
-                        SizedBox(height: 20),
-
+                        SizedBox(height: 10),
                         _buildDescriptionField(),
 
                         SizedBox(height: 32),
@@ -128,7 +130,7 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                             //     height: 52,
                             //     decoration: BoxDecoration(
                             //       border: Border.all(
-                            //         color: Color(0xFF2E8B7F),
+                            //         color: AppColors.rich_teal,
                             //         width: 1.5,
                             //       ),
                             //       borderRadius: BorderRadius.circular(12),
@@ -143,7 +145,7 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                             //       child: Text(
                             //         'Cancel',
                             //         style: TextStyle(
-                            //           color: Color(0xFF2E8B7F),
+                            //           color: AppColors.rich_teal,
                             //           fontSize: 16,
                             //           fontWeight: FontWeight.w500,
                             //         ),
@@ -159,7 +161,7 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
                                     colors: [
-                                      Color(0xFF2E8B7F),
+                                      AppColors.rich_teal,
                                       Color(0xFF1F5F5B),
                                     ],
                                   ),
@@ -194,7 +196,7 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                                   ),
                                   icon: Icon(
                                     Icons.add_circle_outline,
-                                    color: Colors.white,
+                                    color: AppColors.white,
                                     size: 18,
                                   ),
                                   label: Text(
@@ -202,7 +204,7 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.white,
+                                      color: AppColors.white,
                                     ),
                                   ),
                                 ),
@@ -221,17 +223,17 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                   width: double.infinity,
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
+                    color: AppColors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: AppColors.white.withValues(alpha: 0.2),
                     ),
                   ),
                   child: Row(
                     children: [
                       Icon(
                         Icons.lightbulb_outline,
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: AppColors.white.withValues(alpha: 0.8),
                         size: 20,
                       ),
                       SizedBox(width: 12),
@@ -239,7 +241,7 @@ class _CreateProjectScreenState extends State<CreateProjectScreen> {
                         child: Text(
                           'Tip: Be specific about your goals to track progress better',
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.8),
+                            color: AppColors.white.withValues(alpha: 0.8),
                             fontSize: 13,
                           ),
                         ),

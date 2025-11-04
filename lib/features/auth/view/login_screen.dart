@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:message_notifier/config/app_colors.dart';
+import 'package:message_notifier/features/auth/controller/login_controller.dart';
+import 'package:message_notifier/features/auth/view/changeip_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:message_notifier/features/auth/controller/login_screen_controller.dart';
 import 'package:message_notifier/features/auth/view/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -30,6 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.rich_teal,
       body: Container(
         width: double.infinity,
         height: MediaQuery.of(context).size.height,
@@ -38,9 +41,9 @@ class _LoginScreenState extends State<LoginScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF2E8B7F), // Rich teal
-              Color(0xFF1F5F5B), // Darker teal
-              Color(0xFF0D4F47),
+              AppColors.rich_teal,
+              AppColors.dark_teal,
+              AppColors.darkest_teal,
             ],
             stops: [0.0, 0.6, 1.0],
           ),
@@ -58,18 +61,17 @@ class _LoginScreenState extends State<LoginScreen> {
                   //   style: TextStyle(
                   //     fontSize: 42,
                   //     fontWeight: FontWeight.w700,
-                  //     color: Colors.white,
+                  //     color: AppColors.white,
                   //     letterSpacing: -1,
                   //   ),
                   // ),
-
                   // SizedBox(height: MediaQuery.of(context).size.height * 0.01),
                   Text(
                     'Welcome to DailySync',
                     style: TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.w400,
-                      color: Colors.white.withValues(alpha: 0.8),
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.whiteLogin,
                       letterSpacing: 0.5,
                     ),
                   ),
@@ -80,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: double.infinity,
                     padding: EdgeInsets.fromLTRB(35, 2, 35, 35),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.white,
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
@@ -95,11 +97,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Center(
-                            child: Container(
-                              height: 40,
-                              width: 120,
-                              child: Image.asset("assets/images/logo.png"),
+                          GestureDetector(
+                            onLongPress: () {
+                              Get.to(() => ChangeipScreen());
+                            },
+                            child: Center(
+                              child: SizedBox(
+                                height: 40,
+                                width: 120,
+                                child: Image.asset("assets/images/logo.png"),
+                              ),
                             ),
                           ),
                           SizedBox(
@@ -111,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             style: TextStyle(
                               fontSize: 25,
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF2E8B7F),
+                              color: AppColors.rich_teal,
                             ),
                           ),
                           SizedBox(height: 15),
@@ -160,7 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: Text(
                                 'Forgot Password?',
                                 style: TextStyle(
-                                  color: Color(0xFF2E8B7F),
+                                  color: AppColors.dark_teal,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -168,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
 
-                          SizedBox(height: 32),
+                          SizedBox(height: 30),
 
                           Obx(
                             () => Container(
@@ -177,8 +184,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    Color(0xFF2E8B7F),
-                                    Color(0xFF1F5F5B),
+                                    AppColors.rich_teal,
+                                    AppColors.darkest_teal,
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(16),
@@ -195,7 +202,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: controller.isLoading.value
                                   ? Center(
                                       child: CircularProgressIndicator(
-                                        color: Colors.white,
+                                        color: AppColors.white,
                                         strokeWidth: 2,
                                       ),
                                     )
@@ -222,33 +229,37 @@ class _LoginScreenState extends State<LoginScreen> {
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
-                                          color: Colors.white,
+                                          color: AppColors.white,
                                         ),
                                       ),
                                     ),
                             ),
                           ),
 
-                          SizedBox(height: 24),
+                          SizedBox(height: 25),
 
                           Row(
                             children: [
-                              Expanded(child: Divider(color: Colors.grey[300])),
+                              Expanded(
+                                child: Divider(color: AppColors.greyLogin),
+                              ),
                               Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 16),
+                                padding: EdgeInsets.symmetric(horizontal: 10),
                                 child: Text(
                                   'our company websites',
                                   style: TextStyle(
-                                    color: Colors.grey[600],
+                                    color: AppColors.greyLogin,
                                     fontSize: 14,
                                   ),
                                 ),
                               ),
-                              Expanded(child: Divider(color: Colors.grey[300])),
+                              Expanded(
+                                child: Divider(color: AppColors.greyLogin),
+                              ),
                             ],
                           ),
 
-                          SizedBox(height: 24),
+                          SizedBox(height: 22),
 
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -299,7 +310,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 Text(
                                   "Don't have account? ",
                                   style: TextStyle(
-                                    color: Colors.grey[600],
+                                    color: AppColors.greyLogin,
                                     fontSize: 14,
                                   ),
                                 ),
@@ -315,7 +326,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: Text(
                                     'Sign up',
                                     style: TextStyle(
-                                      color: Color(0xFF2E8B7F),
+                                      color: AppColors.rich_teal,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
                                     ),

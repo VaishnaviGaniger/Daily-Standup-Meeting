@@ -1,20 +1,29 @@
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:message_notifier/core/services/api_services.dart';
 import 'package:message_notifier/features/employees/model/standup_history_model.dart';
 
 class StandupHistoryController extends GetxController {
   var isLoading = false.obs;
-  var history = <StandupHistoryModel>[].obs;
+  var history = Rxn<StandupHistoryModel>();
 
-  Future<void> standupHistory() async {
+  Future<void> fetchStandupHistory({DateTime? date}) async {
     try {
       isLoading.value = true;
-      final apiresponse = await ApiServices.standuphistory();
 
-      history.assignAll(apiresponse);
-      print("StandUp History $history");
+      // If no date passed, use today’s date
+      final selectedDate = DateFormat(
+        'yyyy-MM-dd',
+      ).format(date ?? DateTime.now());
+
+      print("📅 Fetching standup data for: $selectedDate");
+
+      final apiResponse = await ApiServices.standupHistory(date: selectedDate);
+
+      history.value = apiResponse;
     } catch (e) {
-      throw 'error';
+      print("❌ Error fetching standup history: $e");
+      history.value = null;
     } finally {
       isLoading.value = false;
     }

@@ -4,17 +4,16 @@ import 'package:message_notifier/config/api_constants.dart';
 import 'package:message_notifier/core/services/dio_service.dart';
 import 'package:message_notifier/core/services/shared_prefs_service.dart';
 import 'package:message_notifier/features/auth/model/login_request_model.dart';
+import 'package:message_notifier/features/employees/model/emp_profile_model.dart';
 import 'package:message_notifier/features/employees/model/meetings_update_model.dart';
 import 'package:message_notifier/features/employees/model/project_list_model.dart';
 import 'package:message_notifier/features/employees/model/standup_history_model.dart';
-import 'package:message_notifier/features/employees/model/submit_daily_task.dart';
+import 'package:message_notifier/features/host/model/updates_from_employee.dart';
 import 'package:message_notifier/features/host/model/approve_user_model.dart';
 import 'package:message_notifier/features/host/model/host_profile_model.dart';
 import 'package:message_notifier/features/host/model/requesting_user_model.dart';
+import 'package:message_notifier/features/host/model/submit_daily_tasks_model.dart';
 
-import '../../features/employees/model/emp_profile_model.dart';
-
-//final basicAuth = 'Basic ${base64Encode(utf8.encode('shri:shri'))}';
 final basicAuth = 'Basic ${base64Encode(utf8.encode('why:why'))}';
 var dio = Dio();
 
@@ -24,7 +23,7 @@ class ApiServices {
 
     if (token != null || token?.isEmpty == true) {
       return {
-        'Authorization': 'Token $token',
+        'Authorization': 'Token ${token?.trim()}',
         'Content-Type': 'application/json',
       };
     } else {
@@ -51,6 +50,25 @@ class ApiServices {
     }
   }
 
+  Future registerfcmToken(Map<String, String> input) async {
+    try {
+      final response = await DioService.postMethod(
+        url: ApiConstants.registerFcmToken,
+        headers: _headersWithToken(),
+        input: input,
+      );
+      print(response);
+      if (response.success) {
+        print("Register Response : ${response.data}");
+        return response.data;
+      } else {
+        print("Error message");
+      }
+    } catch (e) {
+      print("Error");
+    }
+  }
+
   Future login(LoginRequestModel input) async {
     try {
       final response = await DioService.postMethod(
@@ -59,7 +77,7 @@ class ApiServices {
           'Authorization': basicAuth,
           'Content-Type': 'application/json',
         },
-        input: input.toJson(),
+        input: input,
       );
 
       if (response.success) {
@@ -114,15 +132,22 @@ class ApiServices {
 
   static Future<List<ApproveUserModel>> approvedUser() async {
     try {
-      final response = await dio.get(
-        ApiConstants.approvedUser,
-        options: Options(headers: _headersWithToken()),
+      final response = await DioService.getMethod(
+        url: ApiConstants.approvedUser,
+        headers: _headersWithToken(),
       );
-      if (response.statusCode == 200 || response.statusCode == 201) {
+
+      print("Data: ${response.data}");
+
+      if (response.success) {
         final List<dynamic> responseData = response.data;
-        final users = responseData
-            .map((e) => ApproveUserModel.fromJson(e as Map<String, dynamic>))
-            .toList();
+        // final users = responseData
+        //     .map((e) => ApproveUserModel.fromJson(e as Map<String, dynamic>))
+        //     .toList();
+        final List<ApproveUserModel> users = [];
+        for (var i in responseData) {
+          users.add(ApproveUserModel.fromJson(i));
+        }
         return users;
       } else {
         throw Exception("Failed to load users");
@@ -151,7 +176,7 @@ class ApiServices {
 
   static Future approveUser(int id, Map<String, dynamic> input) async {
     try {
-      final token = await SharedPrefsService.getToken();
+      final token = SharedPrefsService.getToken();
       if (token == null) {
         return {'success': false, 'error': 'No authentication token'};
       }
@@ -160,8 +185,8 @@ class ApiServices {
         data: input,
         options: Options(headers: _headersWithToken()),
       );
-      print("Status Code: ${response.statusCode}");
-      print("Response Data: ${response.data}");
+      // print("Status Code: ${response.statusCode}");
+      // print("Response Data: ${response.data}");
       if (response.statusCode == 200 || response.statusCode == 201) {
         print("ApprovedUsers Data: ${response.data['message']}");
         return response.data['message'];
@@ -175,25 +200,27 @@ class ApiServices {
 
   static Future rejectUser(int id) async {
     try {
-      final token = await SharedPrefsService.getToken();
+      final token = SharedPrefsService.getToken();
       if (token == null) {
         return {'success': false, 'error': 'No authentication token found'};
       }
 
       final response = await dio.post(
         "${ApiConstants.rejectUser}$id/",
-        options: Options(
-          headers: {
-            'Authorization': 'Token $token',
-            'Content-Type': 'application/json',
-          },
-        ),
+        options: Options(headers: {'Authorization': 'Token $token'}),
       );
 
       if (response.statusCode == 200) {
+        print("Status Code: ${response.statusCode}");
+        print("Response: $response");
         return response.data['message'];
+        // return json.decode(response.data);
       } else {
-        throw Exception("Failed with status: ${response.statusCode}");
+        return {
+          'success': false,
+          'error':
+              "Reject failed: ${response.statusCode} ${response.statusMessage}",
+        };
       }
     } catch (e) {
       print("Error: $e");
@@ -201,17 +228,61 @@ class ApiServices {
     }
   }
 
-  static Future<List<StandupHistoryModel>> standupHistoryhost() async {
+  static Future<dynamic> cancelMeeting(
+    int id,
+    Map<String, dynamic> input,
+  ) async {
+    try {
+      final response = await DioService.postMethod(
+        url: "${ApiConstants.cancelMeeting}$id/",
+        headers: _headersWithToken(),
+        input: input,
+      );
+      if (response.success) {
+        final responseData = response.data;
+        return responseData;
+      } else {
+        throw "error";
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
+  // static Future<List<StandupHistoryModel>> standupHistoryhost() async {
+  //   try {
+  //     final response = await DioService.getMethod(
+  //       url: ApiConstants.standupHistory,
+  //       headers: _headersWithToken(),
+  //     );
+  //     if (response.success) {
+  //       final List<StandupHistoryModel> responsehistory = [];
+  //       for (var i in response.data) {
+  //         responsehistory.add(StandupHistoryModel.fromJson(i));
+  //       }
+  //       return responsehistory;
+  //     } else {
+  //       throw Exception(response.error);
+  //     }
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }
+
+  static Future<List<MeetingsUpdateModel>> meetingupdateHost() async {
     try {
       final response = await DioService.getMethod(
-        url: ApiConstants.standupHistory,
+        url: ApiConstants.scheduleMeetingHost,
         headers: _headersWithToken(),
       );
       if (response.success) {
-        final List<StandupHistoryModel> responsehistory = [];
+        final List<MeetingsUpdateModel> responsehistory = [];
         for (var i in response.data) {
-          responsehistory.add(StandupHistoryModel.fromJson(i));
+          responsehistory.add(MeetingsUpdateModel.fromJson(i));
         }
+        // print("Response:$response ");
+        // print("Response 2: $responsehistory");
+
         return responsehistory;
       } else {
         throw Exception(response.error);
@@ -221,30 +292,32 @@ class ApiServices {
     }
   }
 
-  // static Future<EmpProfileModel?> empprofile() async {
-  //   try {
-  //     final token = await SharedPrefsService.getToken();
-  //     if (token == null) {
-  //       return null;
-  //     }
-  //     print('Using token for API call: $token');
-  //     final response = await dio.get(
-  //       ApiConstants.empprofile,
-  //       options: Options(headers: {'Authorization': 'Token $token'}),
-  //     );
-  //     if (response.statusCode == 200 || response.statusCode == 201) {
-  //       print("Employee Response: $response");
+  static Future<List<AllTasksUpdatesModel>> allTasksUpdates() async {
+    try {
+      final response = await DioService.getMethod(
+        url: ApiConstants.teamLeadAllTasks,
+        headers: _headersWithToken(),
+      );
 
-  //       return EmpProfileModel.fromJson(response.data);
-  //     } else {
-  //       print("Error: ${response.statusCode}");
-  //       return null;
-  //     }
-  //   } catch (e) {
-  //     print("Error: $e");
-  //     throw Exception("Failed to reject user: $e");
-  //   }
-  // }
+      if (response.success) {
+        print("Response data");
+
+        final data = response.data['results'] as List;
+        print(data);
+        final List<AllTasksUpdatesModel> responseData = data
+            .map((e) => AllTasksUpdatesModel.fromJson(e))
+            .toList();
+
+        print(responseData);
+        return responseData;
+      } else {
+        throw Exception('API returned unsuccessful response');
+      }
+    } catch (e) {
+      print('Error in allTasksUpdates: $e');
+      rethrow;
+    }
+  }
 
   //  -------------------------------  EMPLOYEEE  ------------------------------------
   static Future<EmpProfileModel?> empprofile() async {
@@ -282,7 +355,7 @@ class ApiServices {
 
   static Future<Map<String, dynamic>?> logout() async {
     try {
-      final token = await SharedPrefsService.getToken();
+      final token = SharedPrefsService.getToken();
       if (token == null) {
         return {'success': false, 'error': 'No authentication token'};
       }
@@ -308,32 +381,6 @@ class ApiServices {
     return null;
   }
 
-  // static Future<EmpProfileModel?> updateprofile(
-  //   Map<String, dynamic> input,
-  // ) async {
-  //   try {
-  //     final token = await SharedPrefsService.getToken();
-  //     if (token == null) {
-  //       return null;
-  //     }
-  //     final response = await dio.patch(
-  //       ApiConstants.updateprofile,
-  //       data: jsonEncode(input),
-  //       options: Options(
-  //         headers: {
-  //           'Authorization': 'Token $token',
-  //           'Content-Type': 'application/json',
-  //         },
-  //       ),
-  //     );
-  //     if (response.statusCode == 200) {
-  //       return EmpProfileModel.fromJson(response.data);
-  //     }
-  //   } catch (e) {
-  //     print("Error $e");
-  //   }
-  //   return null;
-  // }
   static Future<EmpProfileModel?> updateprofile(
     Map<String, dynamic> input,
   ) async {
@@ -353,31 +400,6 @@ class ApiServices {
     }
   }
 
-  // static Future submitdailytask(Map<String, dynamic> tasks) async {
-  //   try {
-  //     final token = await SharedPrefsService.getToken();
-  //     if (token == null) {
-  //       return null;
-  //     }
-  //     final response = await dio.post(
-  //       ApiConstants.submitDailyTask,
-  //       data: tasks,
-  //       options: Options(
-  //         headers: {
-  //           'Authorization': 'Token $token',
-  //           'Content-Type': 'application/json',
-  //         },
-  //       ),
-  //     );
-  //     if (response.statusCode == 200 || response.statusCode == 201) {
-  //       print("Response Submit Task: ${response.data['detail']}");
-  //       return response.data;
-  //     }
-  //   } catch (e, stack) {
-  //     print("Error $e");
-  //     print("$stack");
-  //   }
-  // }
   static Future submitdailytask(Map<String, dynamic> input) async {
     try {
       final response = await DioService.postMethod(
@@ -386,11 +408,11 @@ class ApiServices {
         input: input,
       );
       if (response.success) {
-        final detail = response.data is Map && response.data['detail'] != null
-            ? response.data['detail'].toString()
+        final detail = response.data is Map && response.data['message'] != null
+            ? response.data['message'].toString()
             : "Task submitted successfully.";
 
-        return SubmitDailyTaskResponseModel(detail: detail);
+        return SubmitDailyUpdateResponseModel(message: detail);
       } else {
         throw Exception(response.error);
       }
@@ -423,7 +445,7 @@ class ApiServices {
 
   static Future<Response> createsProject(Map<String, dynamic> input) async {
     try {
-      final token = await SharedPrefsService.getToken();
+      final token = SharedPrefsService.getToken();
       final response = await dio.post(
         ApiConstants.createProject,
         data: input,
@@ -460,23 +482,24 @@ class ApiServices {
     }
   }
 
-  static Future<List<StandupHistoryModel>> standuphistory() async {
+  static Future<StandupHistoryModel> standupHistory({
+    required String date,
+  }) async {
     try {
       final response = await DioService.getMethod(
-        url: ApiConstants.standupHistory,
+        url:
+            "http://192.168.1.95:8000/api/SubmitDailyUpdateAPIView/?date=$date",
         headers: _headersWithToken(),
       );
+
+      print("✅ API raw response: $response");
       if (response.success) {
-        print(response.data);
-        List<StandupHistoryModel> history = [];
-        for (var i in response.data) {
-          history.add(StandupHistoryModel.fromJson(i));
-        }
-        return history;
+        return StandupHistoryModel.fromJson(response.data);
       } else {
-        throw Exception(response.error);
+        return StandupHistoryModel.fromJson(response.data);
       }
     } catch (e) {
+      print("❌ Error in standupHistory(): $e");
       rethrow;
     }
   }
@@ -514,19 +537,32 @@ class ApiServices {
     }
   }
 
-  static Future<dynamic> submitdailytasks(Map<String, dynamic> input) async {
+  static Future<SubmitDailyUpdateResponseModel> submitdailytasks(
+    Map<String, dynamic> input,
+  ) async {
     try {
       final response = await DioService.postMethod(
-        url: ApiConstants.submitDailyTask,
+        url: "http://192.168.1.95:8000/api/SubmitDailyUpdateAPIView/",
         headers: _headersWithToken(),
         input: input,
       );
       if (response.success) {
-        return SubmitDailyTaskResponseModel(detail: response.data);
+        if (response.data is Map<String, dynamic>) {
+          print('one');
+
+          return SubmitDailyUpdateResponseModel.fromJson(response.data);
+        } else {
+          print('two');
+
+          return SubmitDailyUpdateResponseModel(
+            message: response.data.toString(),
+          );
+        }
       } else {
         throw Exception(response.error);
       }
     } catch (e) {
+      print('------------- ERROR : $e');
       rethrow;
     }
   }

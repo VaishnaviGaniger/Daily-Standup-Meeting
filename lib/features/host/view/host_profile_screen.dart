@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:message_notifier/config/app_colors.dart';
 import 'package:message_notifier/features/auth/controller/logout_request_controller.dart';
 import 'package:message_notifier/features/auth/view/login_screen.dart';
 import 'package:message_notifier/features/host/controller/host_profile_controller.dart';
@@ -35,6 +36,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
   void initState() {
     super.initState();
     _hostProfileController.getHostProfile();
+    _hostProfileController.update();
   }
 
   void initControllers() {
@@ -93,10 +95,10 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white,
+                        color: AppColors.white,
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
+                            color: Colors.black.withValues(alpha: 0.2),
                             blurRadius: 12,
                             offset: const Offset(0, 6),
                           ),
@@ -124,7 +126,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                       style: const TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w700,
-                        color: Colors.white,
+                        color: AppColors.white,
                       ),
                     ),
                     const SizedBox(height: 6),
@@ -134,13 +136,13 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
+                        color: AppColors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
                         data.designation,
                         style: const TextStyle(
-                          color: Colors.white,
+                          color: AppColors.white,
                           fontSize: 14,
                         ),
                       ),
@@ -153,7 +155,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppColors.white,
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
@@ -183,14 +185,38 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                               label: "Email Address",
                               hint: "Enter your email",
                               icon: Icons.email_outlined,
-                              validator: (value) {
-                                if (value == null || value.isEmpty)
-                                  return "Please enter email";
-                                if (!GetUtils.isEmail(value))
-                                  return "Enter valid email";
-                                return null;
-                              },
+                              iconbutton: null,
+                              isReadOnly: true,
+                              // onIconpressed: () {
+                              //   if (_formKey.currentState!.validate()) {
+                              //     final update = getUpdatedemail();
+                              //     if (update.isNotEmpty) {
+                              //       hostprofileController.updateProfile(update);
+                              //       Get.snackbar(
+                              //         "Success",
+                              //         "Email updated successfully",
+                              //         snackPosition: SnackPosition.BOTTOM,
+                              //       );
+                              //     } else {
+                              //       Get.snackbar(
+                              //         "Info",
+                              //         "No change detected",
+                              //         snackPosition: SnackPosition.BOTTOM,
+                              //       );
+                              //     }
+                              //   }
+                              // },
+                              // validator: (value) {
+                              //   if (value == null || value.isEmpty) {
+                              //     return "Please enter email";
+                              //   }
+                              //   if (!GetUtils.isEmail(value.trim())) {
+                              //     return "Enter valid email";
+                              //   }
+                              //   return null;
+                              // },
                             ),
+
                             const SizedBox(height: 20),
 
                             _buildInputField(
@@ -199,6 +225,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                               hint: "Phone number (read-only)",
                               icon: Icons.phone_outlined,
                               isReadOnly: true,
+                              iconbutton: null,
                             ),
                             const SizedBox(height: 20),
 
@@ -208,45 +235,58 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                               hint: "Enter your address",
                               icon: Icons.location_on_outlined,
                               maxLines: 2,
+                              iconbutton: Icons.edit,
+                              onIconpressed: () {
+                                final update = getUpdatedaddress();
+                                if (update.isNotEmpty) {
+                                  hostprofileController.updateProfile(update);
+                                  Get.snackbar(
+                                    "Updated Address Successfully",
+                                    "",
+                                  );
+                                } else {
+                                  Get.snackbar("No Chnage detected", '');
+                                }
+                              },
                             ),
                             const SizedBox(height: 20),
 
                             _buildDateField(),
 
                             const SizedBox(height: 30),
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  final updated = getUpdatedFields();
-                                  if (updated.isNotEmpty) {
-                                    hostprofileController.updateProfile(
-                                      updated,
-                                    );
-                                    Get.snackbar("SuccessFully Updataed", "");
-                                  } else {
-                                    Get.snackbar("Info", "No changes detected");
-                                  }
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: const Size.fromHeight(50),
-                                backgroundColor: const Color(0xFF2E8B7F),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              icon: const Icon(
-                                Icons.save_outlined,
-                                color: Colors.white,
-                              ),
-                              label: const Text(
-                                "Update Profile",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
+                            // ElevatedButton.icon(
+                            //   onPressed: () {
+                            //     if (_formKey.currentState!.validate()) {
+                            //       final updated = getUpdatedFields();
+                            //       if (updated.isNotEmpty) {
+                            //         hostprofileController.updateProfile(
+                            //           updated,
+                            //         );
+                            //         Get.snackbar("SuccessFully Updataed", "");
+                            //       } else {
+                            //         Get.snackbar("Info", "No changes detected");
+                            //       }
+                            //     }
+                            //   },
+                            //   style: ElevatedButton.styleFrom(
+                            //     minimumSize: const Size.fromHeight(50),
+                            //     backgroundColor: const Color(0xFF2E8B7F),
+                            //     shape: RoundedRectangleBorder(
+                            //       borderRadius: BorderRadius.circular(12),
+                            //     ),
+                            //   ),
+                            //   icon: const Icon(
+                            //     Icons.save_outlined,
+                            //     color: AppColors.white,
+                            //   ),
+                            //   label: const Text(
+                            //     "Update Profile",
+                            //     style: TextStyle(
+                            //       color: AppColors.white,
+                            //       fontSize: 16,
+                            //     ),
+                            //   ),
+                            // ),
                           ],
                         ),
                       ),
@@ -294,6 +334,8 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
     required String label,
     required String hint,
     required IconData icon,
+    required IconData? iconbutton,
+    VoidCallback? onIconpressed,
     bool isReadOnly = false,
     int maxLines = 1,
     String? Function(String?)? validator,
@@ -317,6 +359,10 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
           validator: validator,
           decoration: InputDecoration(
             prefixIcon: Icon(icon, color: const Color(0xFF2E8B7F)),
+            suffixIcon: IconButton(
+              onPressed: onIconpressed,
+              icon: Icon(iconbutton),
+            ),
             hintText: hint,
             filled: true,
             fillColor: Colors.grey[100],
@@ -337,22 +383,56 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
       label: "Date of Birth",
       hint: "YYYY-MM-DD",
       icon: Icons.calendar_today,
-      isReadOnly: true,
+      // isReadOnly: true,
+      iconbutton: Icons.edit,
+      onIconpressed: () {
+        final update = getupdateddob();
+        if (update.isNotEmpty) {
+          hostprofileController.updateProfile(update);
+          Get.snackbar("Updated Successfully!", "");
+        } else {
+          Get.snackbar("No Chnages found", '');
+        }
+      },
     );
   }
 
-  Map<String, dynamic> getUpdatedFields() {
+  Map<String, dynamic> getUpdatedemail() {
     final data = _hostProfileController.hostProfile.value;
     if (data == null) return {};
-    final Map<String, dynamic> updated = {};
-    if (emailController.text != data.email)
-      updated['email'] = emailController.text;
-    if (phoneController.text != data.phone)
-      updated['phone'] = phoneController.text;
-    if (addressController.text != data.address)
-      updated['address'] = addressController.text;
-    if (dobController.text != data.dob) updated['dob'] = dobController.text;
-    return updated;
+    final Map<String, dynamic> updatedemail = {};
+    if (emailController.text.trim() != data.email) {
+      updatedemail['email'] = emailController.text.trim();
+    }
+    // final Map<String, dynamic> updatedaddress = {};
+    return updatedemail;
+    // if (phoneController.text != data.phone)
+    //   updated['phone'] = phoneController.text;
+    // if (addressController.text != data.address)
+    //   updatedaddress['address'] = addressController.text;
+    // // if (dobController.text != data.dob) updated['dob'] = dobController.text;
+    // return updated;
+  }
+
+  Map<String, dynamic> getUpdatedaddress() {
+    final data = _hostProfileController.hostProfile.value;
+    if (data == null) return {};
+    final Map<String, dynamic> updatedaddress = {};
+    if (addressController.text != data.address) {
+      updatedaddress['address'] = addressController.text;
+    }
+    // if (dobController.text != data.dob) updated['dob'] = dobController.text;
+    return updatedaddress;
+  }
+
+  Map<String, dynamic> getupdateddob() {
+    final data = _hostProfileController.hostProfile.value;
+    if (data == null) return {};
+    final Map<String, dynamic> updateddob = {};
+    if (dobController.text != data.dob) {
+      updateddob['dob'] = dobController.text;
+    }
+    return updateddob;
   }
 
   void _showLogoutDialog(BuildContext context) {
@@ -377,7 +457,10 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
               );
             },
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text("Logout", style: TextStyle(color: Colors.white)),
+            child: const Text(
+              "Logout",
+              style: TextStyle(color: AppColors.white),
+            ),
           ),
         ],
       ),

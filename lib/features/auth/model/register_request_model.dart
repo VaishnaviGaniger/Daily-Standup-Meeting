@@ -8,6 +8,7 @@ class RegisterRequestModel {
   final String address;
   final String dob;
   final String designation;
+  // final String fcmToken;
 
   RegisterRequestModel({
     // required this.role,
@@ -19,6 +20,7 @@ class RegisterRequestModel {
     required this.address,
     required this.dob,
     required this.designation,
+    // required this.fcmToken,
   });
 
   Map<String, String> toJson() {
@@ -32,6 +34,7 @@ class RegisterRequestModel {
       "address": address,
       "dob": dob,
       "designation": designation,
+      // "token": fcmToken,
     };
   }
 }

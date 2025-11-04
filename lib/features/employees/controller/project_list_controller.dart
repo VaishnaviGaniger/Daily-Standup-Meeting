@@ -4,6 +4,7 @@ import 'package:message_notifier/features/employees/model/project_list_model.dar
 
 class ProjectListController extends GetxController {
   var isLoading = false.obs;
+  var projectList = <ProjectListModel>[].obs;
   var projectname = <String>[].obs;
   var projectid = <int>[].obs;
 
@@ -11,12 +12,14 @@ class ProjectListController extends GetxController {
     try {
       isLoading.value = true;
       final apiresponse = await ApiServices.projectList();
+
       projectname.clear();
       projectid.clear();
       for (ProjectListModel project in apiresponse) {
         projectname.add(project.name);
         projectid.add(project.id);
       }
+      projectList.assignAll(apiresponse);
       print("Project Names: $projectname");
       print("Project IDs: $projectid");
     } catch (e) {

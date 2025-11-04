@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:message_notifier/config/app_colors.dart';
 import 'package:message_notifier/core/services/api_services.dart';
 import 'package:message_notifier/features/host/model/approved_user_model.dart';
 import 'package:message_notifier/features/host/model/requesting_user_model.dart';
@@ -10,6 +11,13 @@ class ApproveUserController extends GetxController {
 
   var usernames = <String>[].obs;
   var userid = <int>[].obs;
+
+  //  void updateUserRole(int index, String? role) {
+  //   if (index >= 0 && index < employee.length) {
+  //     employee[index].selectedRole = role;
+  //     employee.refresh(); // This triggers UI update
+  //   }
+  // }
 
   Future<void> requestingUserData() async {
     try {
@@ -48,7 +56,7 @@ class ApproveUserController extends GetxController {
         "User approved successfully",
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.green,
-        colorText: Colors.white,
+        colorText: AppColors.white,
       );
       // optional: remove user from list after approval
       employee.removeWhere((emp) => emp.id == id);
@@ -61,20 +69,36 @@ class ApproveUserController extends GetxController {
   }
 
   Future<void> rejectUser(
-    int id,
-    //  bool is_approved
+    int id
+    // int index
   ) async {
     try {
       isLoading.value = true;
       // final input = RejectUserModel(is_approved: is_approved);
-      final apiResponse = await ApiServices.rejectUser(
-        id,
-        // input.toJson()
-      );
+      final apiResponse = await ApiServices.rejectUser(id);
+    //   if (index >= 0 && index < employee.length) {
+    //   employee.removeAt(index);
+    // }
+     
+     employee.removeWhere((emp) => emp.id == id);
+     employee.refresh(); // force UI refresh if needed
       print("Api Response: $apiResponse");
-      employee.removeWhere((emp) => emp.id == id);
+      Get.snackbar(
+      "Rejected",
+      "User rejected successfully",
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: const Color.fromARGB(200, 224, 78, 68),
+      colorText: AppColors.white,
+    );
     } catch (e) {
-      print("Error");
+      print("Error in rejectUser: $e");
+    Get.snackbar(
+      "Error",
+      "Failed to reject user",
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.red,
+      colorText: AppColors.white,
+    );
     } finally {
       isLoading.value = false;
     }

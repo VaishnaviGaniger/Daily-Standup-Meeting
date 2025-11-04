@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:message_notifier/core/services/api_services.dart';
+import 'package:message_notifier/config/app_colors.dart';
 import 'package:message_notifier/features/host/controller/approved_user_controller.dart';
 import 'package:message_notifier/features/host/controller/schedule_meeting_controller.dart';
 
@@ -34,20 +34,20 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print('Usernames list: ${_approvedUserController.usernames}');
-    print('Usernames length: ${_approvedUserController.usernames.length}');
+    // print('Usernames list: ${_approvedUserController.usernames}');
+    // print('Usernames length: ${_approvedUserController.usernames.length}');
 
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           "Daily Stand-up Meeting",
-          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
+          style: TextStyle(fontWeight: FontWeight.w600, color: AppColors.white),
         ),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: AppColors.white),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -60,7 +60,7 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF2E8B7F), // Rich teal
+              AppColors.rich_teal, // Rich teal
               Color(0xFF1F5F5B), // Darker teal
               Color(0xFF0D4F47), // Deepest teal
             ],
@@ -77,7 +77,7 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
                   'Connect your team with purpose',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.white.withValues(alpha: 0.8),
+                    color: AppColors.white.withValues(alpha: 0.8),
                   ),
                 ),
                 SizedBox(height: 20),
@@ -86,7 +86,7 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
                   width: double.infinity,
                   padding: EdgeInsets.all(28),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.white,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
@@ -106,12 +106,14 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
                             Container(
                               padding: EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: Color(0xFF2E8B7F).withValues(alpha: 0.1),
+                                color: AppColors.rich_teal.withValues(
+                                  alpha: 0.1,
+                                ),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Icon(
                                 Icons.schedule,
-                                color: Color(0xFF2E8B7F),
+                                color: AppColors.rich_teal,
                                 size: 20,
                               ),
                             ),
@@ -121,7 +123,7 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w600,
-                                color: Color(0xFF2E8B7F),
+                                color: AppColors.rich_teal,
                               ),
                             ),
                           ],
@@ -206,12 +208,14 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
                           height: 56,
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
-                              colors: [Color(0xFF2E8B7F), Color(0xFF1F5F5B)],
+                              colors: [AppColors.rich_teal, Color(0xFF1F5F5B)],
                             ),
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
-                                color: Color(0xFF2E8B7F).withValues(alpha: 0.3),
+                                color: AppColors.rich_teal.withValues(
+                                  alpha: 0.3,
+                                ),
                                 blurRadius: 12,
                                 offset: Offset(0, 6),
                               ),
@@ -221,7 +225,7 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
                             () => _scheduleMeetingController.isLoading.value
                                 ? Center(
                                     child: CircularProgressIndicator(
-                                      color: Colors.white,
+                                      color: AppColors.white,
                                       strokeWidth: 2,
                                     ),
                                   )
@@ -257,7 +261,7 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
                                     ),
                                     icon: Icon(
                                       Icons.send_outlined,
-                                      color: Colors.white,
+                                      color: AppColors.white,
                                       size: 18,
                                     ),
                                     label: Text(
@@ -265,7 +269,7 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: FontWeight.w600,
-                                        color: Colors.white,
+                                        color: AppColors.white,
                                       ),
                                     ),
                                   ),
@@ -283,17 +287,17 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
                   width: double.infinity,
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.1),
+                    color: AppColors.white.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: AppColors.white.withValues(alpha: 0.2),
                     ),
                   ),
                   child: Row(
                     children: [
                       Icon(
                         Icons.info_outline,
-                        color: Colors.white.withValues(alpha: 0.8),
+                        color: AppColors.white.withValues(alpha: 0.8),
                         size: 20,
                       ),
                       SizedBox(width: 12),
@@ -301,7 +305,7 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
                         child: Text(
                           'All selected team members will receive a meeting notification',
                           style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.8),
+                            color: AppColors.white.withValues(alpha: 0.8),
                             fontSize: 13,
                           ),
                         ),
@@ -336,10 +340,10 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
             width: double.infinity,
             padding: EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Color(0xFF2E8B7F).withValues(alpha: 0.1),
+              color: AppColors.rich_teal.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: Color(0xFF2E8B7F).withValues(alpha: 0.3),
+                color: AppColors.rich_teal.withValues(alpha: 0.3),
               ),
             ),
             child: Wrap(
@@ -349,7 +353,7 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
                 return Container(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Color(0xFF2E8B7F),
+                    color: AppColors.rich_teal,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
@@ -358,7 +362,7 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
                       Text(
                         employee,
                         style: TextStyle(
-                          color: Colors.white,
+                          color: AppColors.white,
                           fontSize: 12,
                           fontWeight: FontWeight.w500,
                         ),
@@ -370,7 +374,11 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
                             selectedEmployees.remove(employee);
                           });
                         },
-                        child: Icon(Icons.close, color: Colors.white, size: 14),
+                        child: Icon(
+                          Icons.close,
+                          color: AppColors.white,
+                          size: 14,
+                        ),
                       ),
                     ],
                   ),
@@ -424,7 +432,7 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
             () => Container(
               margin: const EdgeInsets.only(top: 8),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppColors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.grey[200]!),
                 boxShadow: [
@@ -485,7 +493,7 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
                           ),
                         ),
                         value: selectedEmployees.contains(name),
-                        activeColor: Color(0xFF2E8B7F),
+                        activeColor: AppColors.rich_teal,
                         onChanged: (bool? value) {
                           setState(() {
                             if (value == true) {
@@ -525,7 +533,7 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: Colors.grey[700],
+            // color: Colors.grey[700],
           ),
         ),
         SizedBox(height: 8),

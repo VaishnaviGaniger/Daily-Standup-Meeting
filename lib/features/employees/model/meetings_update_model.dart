@@ -1,7 +1,8 @@
 class MeetingsUpdateModel {
   final int id;
   final String host;
-  final List<String> participants;
+  // final List<String> participants;
+ final int count;
   final String about;
   final String meeting_time;
   final String meeting_date;
@@ -10,7 +11,8 @@ class MeetingsUpdateModel {
   MeetingsUpdateModel({
     required this.id,
     required this.host,
-    required this.participants,
+    // required this.participants,
+ required this.count,
     required this.about,
     required this.meeting_time,
     required this.meeting_date,
@@ -21,11 +23,12 @@ class MeetingsUpdateModel {
     return MeetingsUpdateModel(
       id: json['id'],
       host: json['host'],
-      participants:
-          (json['participants'] as List<dynamic>?)
-              ?.map((participant) => participant.toString())
-              .toList() ??
-          [],
+      count: json['count'] ?? 0,
+      // participants:
+      //     (json['participants'] )
+      //         ?.map((participant) => participant.toString())
+      //         .toList() ??
+      //     [],
       about: json['about'],
       meeting_time: json['meeting_time'],
       meeting_date: json['meeting_date'],
@@ -36,7 +39,8 @@ class MeetingsUpdateModel {
     return {
       'id': id,
       'host': host,
-      'participants': participants,
+      // 'participants': participants,
+      'count':count,
       'about': about,
       'meeting_time': meeting_time,
       'meeting_date': meeting_date,

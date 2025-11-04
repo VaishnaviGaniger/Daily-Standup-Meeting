@@ -1,6 +1,12 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:message_notifier/config/api_constants.dart';
+import 'package:message_notifier/config/app_colors.dart';
+import 'package:message_notifier/core/services/api_services.dart';
+import 'package:message_notifier/core/services/shared_prefs_service.dart';
 import 'package:message_notifier/features/auth/controller/register_screen_controller.dart';
+import 'package:message_notifier/features/auth/model/registerFcmToken_model.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -39,7 +45,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: [
-              Color(0xFF2E8B7F), // Rich teal
+              AppColors.rich_teal, // Rich teal
               Color(0xFF1F5F5B), // Darker teal
               Color(0xFF0D4F47), // Deep teal
             ],
@@ -58,11 +64,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         onPressed: () => Get.back(),
                         icon: Icon(
                           Icons.arrow_back_ios,
-                          color: Colors.white,
+                          color: AppColors.white,
                           size: 20,
                         ),
                         style: IconButton.styleFrom(
-                          backgroundColor: Colors.white.withOpacity(0.2),
+                          backgroundColor: AppColors.white.withOpacity(0.2),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -73,7 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           'Back to login',
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.8),
+                            color: AppColors.white.withOpacity(0.8),
                             fontSize: 14,
                           ),
                         ),
@@ -86,7 +92,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     width: double.infinity,
                     padding: EdgeInsets.all(32),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppColors.white,
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
@@ -106,7 +112,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             style: TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.w700,
-                              color: Color(0xFF2E8B7F),
+                              color: AppColors.rich_teal,
                             ),
                           ),
                           SizedBox(height: 10),
@@ -270,14 +276,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
-                                    Color(0xFF2E8B7F),
+                                    AppColors.rich_teal,
                                     Color(0xFF1F5F5B),
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(16),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Color(0xFF2E8B7F).withOpacity(0.3),
+                                    color: AppColors.rich_teal.withOpacity(0.3),
                                     blurRadius: 12,
                                     offset: Offset(0, 6),
                                   ),
@@ -286,7 +292,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               child: controller.isLoading.value
                                   ? Center(
                                       child: CircularProgressIndicator(
-                                        color: Colors.white,
+                                        color: AppColors.white,
                                         strokeWidth: 2,
                                       ),
                                     )
@@ -303,6 +309,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                             designationController.text,
                                           );
 
+                                          final fcmToken =
+                                              await FirebaseMessaging.instance
+                                                  .getToken();
+
+                                          // Map<String, String> sendToken ={"token":fcmToken};
+                                          Map<String, String> tokenMap = {
+                                            "token": fcmToken ?? '',
+                                          };
+                                          await ApiServices().registerfcmToken(
+                                            tokenMap,
+                                          );
+
                                           ScaffoldMessenger.of(
                                             context,
                                           ).showSnackBar(
@@ -310,7 +328,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                               content: Text(
                                                 "Registered Successfully",
                                                 style: TextStyle(
-                                                  color: Colors.white,
+                                                  color: AppColors.white,
                                                 ),
                                               ),
                                               backgroundColor: Color(
@@ -325,6 +343,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                               duration: Duration(seconds: 3),
                                             ),
                                           );
+                                          Get.back();
                                         }
                                       },
                                       style: ElevatedButton.styleFrom(
@@ -341,7 +360,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
-                                          color: Colors.white,
+                                          color: AppColors.white,
                                         ),
                                       ),
                                     ),
@@ -367,7 +386,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                   child: Text(
                                     'Login',
                                     style: TextStyle(
-                                      color: Color(0xFF2E8B7F),
+                                      color: AppColors.rich_teal,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
                                     ),
@@ -470,9 +489,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: Color(0xFF2E8B7F),
-              onPrimary: Colors.white,
-              surface: Colors.white,
+              primary: AppColors.rich_teal,
+              onPrimary: AppColors.white,
+              surface: AppColors.white,
               onSurface: Colors.grey[800]!,
             ),
           ),

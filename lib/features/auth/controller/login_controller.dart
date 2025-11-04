@@ -3,8 +3,11 @@ import 'package:get/get.dart';
 import 'package:message_notifier/core/services/api_services.dart';
 import 'package:message_notifier/core/services/shared_prefs_service.dart';
 import 'package:message_notifier/features/auth/model/login_request_model.dart';
+import 'package:message_notifier/features/employees/view/emp_dashboard_items_screen.dart';
 import 'package:message_notifier/features/employees/view/emp_dashboard_screen.dart';
+import 'package:message_notifier/features/host/view/host_dashboard_items_Screen.dart';
 import 'package:message_notifier/features/host/view/host_dashboard_screen.dart';
+import 'package:message_notifier/firebase_msg.dart';
 
 class LoginScreenController extends GetxController {
   var isLoading = false.obs;
@@ -19,6 +22,13 @@ class LoginScreenController extends GetxController {
       final String token = response['token'];
       print("Token Data : $token");
       await SharedPrefsService.saveToken(token);
+
+      // ------------------ Add FCM token integration ------------------
+      String? fcmToken = await FirebaseMsg().msgService.getToken();
+      if (fcmToken != null) {
+        await SharedPrefsService.saveFcmToken(fcmToken);
+        await FirebaseMsg().sendTokenToServer(fcmToken);
+      }
 
       if (response['message'] == "Login successful.") {
         String role = response['role'];
@@ -43,13 +53,13 @@ class LoginScreenController extends GetxController {
       }
     } catch (e) {
       print("error occurd $e");
-      // Get.snackbar(
-      //   'Error',
-      //   'Login failed. Please try again.',
-      //   backgroundColor: Colors.red,
-      //   colorText: Colors.white,
-      //   dismissDirection: DismissDirection.horizontal,
-      // );
+      Get.snackbar(
+        'Error',
+        'Login failed. Please try again.',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        dismissDirection: DismissDirection.horizontal,
+      );
     } finally {
       isLoading.value = false;
     }

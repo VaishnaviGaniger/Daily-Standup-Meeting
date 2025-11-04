@@ -4,12 +4,13 @@ import 'package:message_notifier/features/host/model/schedule_meeting_model.dart
 
 class ScheduleMeetingController extends GetxController {
   var isLoading = false.obs;
+  var meeting = <ScheduleMeetingModel>[].obs;
 
   Future<void> schedulemeeting(
     List<String> participants,
     String about,
-    String meeting_time,
-    String meeting_date,
+    String meetingTime,
+    String meetingDate,
     String link,
   ) async {
     try {
@@ -17,8 +18,8 @@ class ScheduleMeetingController extends GetxController {
       final input = ScheduleMeetingModel(
         participants: participants,
         about: about,
-        meeting_time: meeting_time,
-        meeting_date: meeting_date,
+        meeting_time: meetingTime,
+        meeting_date: meetingDate,
         link: link,
       );
 

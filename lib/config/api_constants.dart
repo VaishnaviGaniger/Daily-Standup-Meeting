@@ -1,35 +1,46 @@
+import 'package:message_notifier/core/services/shared_prefs_service.dart';
+
 class ApiConstants {
-  // static const String baseUrl = 'http://192.168.0.116:8000/api/';
+  // static String baseUrl = "http://192.168.0.108:8000/api/";
+  static String baseUrl =
+      SharedPrefsService.getStoredIp() ?? "http://192.168.1.95:8000/api/";
+  //static String baseUrl = "http://192.168.1.38:8000/api/";
 
-  // static const String baseUrl = 'http://192.168.0.109:8000/api/';
+  static String registerUrl = '${baseUrl}RegisterAPI/';
+  static String loginUrl = '${baseUrl}LoginAPI/';
+  static String registerFcmToken = "${baseUrl}RegisterFCMTokenAPI/";
 
-  static const String baseUrl = "http://192.168.0.112:8000/api/";
+  static String createProject = '${baseUrl}ProjectCreateAPI/';
 
-  static const String registerUrl = '${baseUrl}RegisterAPI/';
-  static const String loginUrl = '${baseUrl}LoginAPI/';
-  static const String createProject = '${baseUrl}ProjectCreateAPI/';
+  static String requestingUser = '${baseUrl}requesting_to_approve/';
+  static String approveUser = '${baseUrl}ApproveUserAPI/';
 
-  static const String requestingUser = '${baseUrl}requesting_to_approve/';
-  static const String approveUser = '${baseUrl}ApproveUserAPI/';
-  static const String approvedUser = '${baseUrl}ApprovedListsAPI/';
+  static String approvedUser = '${baseUrl}ApprovedList/';
 
   static final String rejectUser = '${baseUrl}RejectUserAPI/';
 
-  static const String empprofile = '${baseUrl}EmpProfileView/';
+  static String empprofile = '${baseUrl}EmpProfileView/';
 
-  static const String scheduleMeeting = '${baseUrl}ScheduleMeetingAPIView/';
+  static String scheduleMeeting = '${baseUrl}ScheduleMeetingAPIView/';
 
-  static const String scheduleMeetings = '${baseUrl}ScheduleMeetingAPIView/';
+  static String scheduleMeetings = '${baseUrl}ScheduleMeetingAPIView/';
+  static String scheduleMeetingHost = '${baseUrl}ScheduleMeetingAPIView/';
 
-  static const String standupHistory = '${baseUrl}SubmitDailyTaskAPIView/';
+  static String standupHistory = '${baseUrl}SubmitDailyTaskAPIView/';
 
-  static const String updateMeeting = '${baseUrl}update_meeting/';
+  static String updateMeeting = '${baseUrl}update_meeting/';
 
-  static const String submitDailyTask = '${baseUrl}SubmitDailyTaskAPIView/';
+  static String submitDailyTask = '${baseUrl}SubmitDailyTaskAPIView/';
 
-  static const String projectList = '${baseUrl}ProjectList/';
+  static String projectList = '${baseUrl}ProjectList/';
 
-  static const String updateprofile = '${baseUrl}EmpProfileView/';
+  static String updateprofile = '${baseUrl}EmpProfileView/';
 
-  static const String logout = '${baseUrl}logout_api/';
+  static String cancelMeeting = '${baseUrl}CancelMeetingAPIView/';
+
+  static String teamLeadAllTasks = '${baseUrl}team-lead/all-tasks/';
+
+  static String logout = '${baseUrl}logout_api/';
+
+  //static String
 }
