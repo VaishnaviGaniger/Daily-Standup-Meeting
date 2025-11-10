@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:message_notifier/config/app_colors.dart';
 import 'package:message_notifier/core/services/api_services.dart';
-import 'package:message_notifier/features/host/model/submit_daily_tasks_model.dart';
+import 'package:message_notifier/features/common_model/submit_daily_tasks_model.dart';
 
 class SubmitDailyTasksController extends GetxController {
   var isLoading = false.obs;
@@ -34,7 +34,7 @@ class SubmitDailyTasksController extends GetxController {
       } else {
         Get.snackbar(
           'Error',
-          'Failed to submit daily updates',
+          response.message,
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red,
           colorText: AppColors.white,
@@ -47,9 +47,9 @@ class SubmitDailyTasksController extends GetxController {
       debugPrint("Error submitting daily updates: $e");
       Get.snackbar(
         'Error',
-        'Something went wrong. Please try again.',
+        '⏰ Time is over! You can’t update after 10:30 AM.',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
+        backgroundColor: const Color.fromARGB(205, 244, 67, 54),
         colorText: AppColors.white,
         margin: const EdgeInsets.all(12),
         duration: const Duration(seconds: 3),

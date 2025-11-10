@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:message_notifier/config/app_colors.dart';
 import 'package:message_notifier/core/services/api_services.dart';
-import 'package:message_notifier/features/host/model/submit_daily_tasks_model.dart';
+import 'package:message_notifier/features/common_model/submit_daily_tasks_model.dart';
 
 class SubmitDailyTaskEmpController extends GetxController {
   var isLoading = false.obs;
@@ -20,27 +20,36 @@ class SubmitDailyTaskEmpController extends GetxController {
         Get.snackbar(
           '✅ Success',
           response.message,
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.green,
           colorText: AppColors.white,
+          margin: EdgeInsets.all(12),
+          borderRadius: 10,
+          duration: Duration(seconds: 2),
         );
       } else {
         Get.snackbar(
           '⚠️ Error',
           'Failed to submit daily updates',
-          snackPosition: SnackPosition.BOTTOM,
+          snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red,
           colorText: AppColors.white,
+          margin: EdgeInsets.all(12),
+          borderRadius: 10,
+          duration: Duration(seconds: 2),
         );
       }
     } catch (e) {
       print("❌ Error submitting daily updates: $e");
       Get.snackbar(
-        'Error',
-        'Something went wrong. Please try again.',
-        snackPosition: SnackPosition.BOTTOM,
+        'Error!',
+        '$e',
+        snackPosition: SnackPosition.TOP,
         backgroundColor: Colors.red,
         colorText: AppColors.white,
+        margin: EdgeInsets.all(12),
+        borderRadius: 10,
+        duration: Duration(seconds: 2),
       );
     } finally {
       isLoading.value = false;

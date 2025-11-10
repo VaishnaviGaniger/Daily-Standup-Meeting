@@ -234,11 +234,16 @@ class _ScheduleMeetingScreenState extends State<ScheduleMeetingScreen> {
                                       if (_formKey.currentState!.validate()) {
                                         if (selectedEmployees.isEmpty) {
                                           Get.snackbar(
-                                            'Error',
                                             'Please select at least one employee',
+                                            '',
+                                            snackPosition: SnackPosition.TOP,
                                             backgroundColor: Colors.red[100],
                                             colorText: Colors.red[800],
+                                            margin: EdgeInsets.all(12),
+                                            borderRadius: 10,
+                                            duration: Duration(seconds: 2),
                                           );
+
                                           return;
                                         }
                                         _scheduleMeetingController

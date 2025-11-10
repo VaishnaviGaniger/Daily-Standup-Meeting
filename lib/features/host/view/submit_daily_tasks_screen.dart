@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:message_notifier/config/app_colors.dart';
 import 'package:message_notifier/features/employees/controller/project_list_controller.dart';
 import 'package:message_notifier/features/host/controller/submit_daily_tasks_controller.dart';
-import 'package:message_notifier/features/host/model/submit_daily_tasks_model.dart';
+import 'package:message_notifier/features/common_model/submit_daily_tasks_model.dart';
 
 class SubmitDailyTaskHostScreen extends StatefulWidget {
   const SubmitDailyTaskHostScreen({super.key});
@@ -32,10 +32,44 @@ class _SubmitDailyTaskHostScreenState extends State<SubmitDailyTaskHostScreen> {
   final TextEditingController blockersController = TextEditingController();
   int? blockerProject;
 
+  // --------- cutoff lockout -------------
+  bool _lockedOut = false;
+
+  void _checkCutoff() {
+    final now = DateTime.now();
+    final cutoff = DateTime(now.year, now.month, now.day, 10, 30); // 10:30 AM
+    if (now.isAfter(cutoff)) {
+      _lockedOut = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Get.defaultDialog(
+          title: "Submissions closed",
+          titleStyle: const TextStyle(
+            fontWeight: FontWeight.w700,
+            color: AppColors.rich_teal,
+          ),
+          middleText: "It's past 10:30 AM. You should submit before 10:30 AM.",
+          textConfirm: "OK",
+          confirmTextColor: Colors.white,
+          onConfirm: () {
+            Get.back(); // close dialog
+            Navigator.of(context).pop(); // leave this page
+          },
+          barrierDismissible: false,
+          buttonColor: const Color(0xFF2E8B7F),
+          radius: 10,
+        );
+      });
+    }
+  }
+  // --------------------------------------
+
   @override
   void initState() {
     super.initState();
-    _projectListController.fetchProjectList();
+    _checkCutoff();
+    if (!_lockedOut) {
+      _projectListController.fetchProjectList();
+    }
   }
 
   @override
@@ -52,8 +86,64 @@ class _SubmitDailyTaskHostScreenState extends State<SubmitDailyTaskHostScreen> {
     return "${hr.toString().padLeft(2, '0')}:${min.toString().padLeft(2, '0')}";
   }
 
+  bool _sectionHasAnyTask(List<ProjectSection> sections) {
+    for (final s in sections) {
+      if (s.selectedProject != null) {
+        final hasText = s.controllersy.any((c) => c.text.trim().isNotEmpty);
+        if (hasText) return true;
+      }
+    }
+    return false;
+  }
+
+  void _showRequiredPopup(String title, String message) {
+    Get.defaultDialog(
+      title: title,
+      titleStyle: const TextStyle(
+        fontWeight: FontWeight.w700,
+        color: AppColors.rich_teal,
+      ),
+      middleText: message,
+      textConfirm: "OK",
+      confirmTextColor: Colors.white,
+      onConfirm: () => Get.back(),
+      buttonColor: const Color(0xFF2E8B7F),
+      radius: 10,
+    );
+  }
+
+  bool _validateRequiredPages() {
+    final hasYesterday = _sectionHasAnyTask(_pageProjectSections[0]);
+    final hasToday = _sectionHasAnyTask(_pageProjectSections[1]);
+
+    if (!hasYesterday || !hasToday) {
+      final missingPage = !hasYesterday ? 0 : 1;
+      _pageController.animateToPage(
+        missingPage,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+
+      _showRequiredPopup(
+        "Add required updates",
+        !hasYesterday && !hasToday
+            ? "Please add at least one project and task in both:\n• Yesterday's Tasks\n• Today's Plans"
+            : !hasYesterday
+            ? "Please add at least one project and task in Yesterday's Tasks."
+            : "Please add at least one project and task in Today's Plans.",
+      );
+      return false;
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Short-circuit UI if locked out (dialog is already shown and page will pop)
+    if (_lockedOut) {
+      return const Scaffold(backgroundColor: Colors.white);
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFA),
       body: Container(
@@ -213,6 +303,9 @@ class _SubmitDailyTaskHostScreenState extends State<SubmitDailyTaskHostScreen> {
                                         curve: Curves.easeInOut,
                                       );
                                     } else {
+                                      // ✅ Validate required pages before building the model
+                                      if (!_validateRequiredPages()) return;
+
                                       final model = SubmitDailyUpdatesModel(
                                         yesterday: _pageProjectSections[0].map((
                                           section,
@@ -237,7 +330,6 @@ class _SubmitDailyTaskHostScreenState extends State<SubmitDailyTaskHostScreen> {
                                             ),
                                           );
                                         }).toList(),
-
                                         today: _pageProjectSections[1].map((
                                           section,
                                         ) {
@@ -261,7 +353,7 @@ class _SubmitDailyTaskHostScreenState extends State<SubmitDailyTaskHostScreen> {
                                             ),
                                           );
                                         }).toList(),
-
+                                        // 🔓 Blockers remain optional
                                         blockers:
                                             (blockerProject != null &&
                                                 blockersController.text
@@ -282,7 +374,6 @@ class _SubmitDailyTaskHostScreenState extends State<SubmitDailyTaskHostScreen> {
 
                                       await submitDailyTasksController
                                           .submitDailyUpdates(model);
-
                                       Navigator.pop(context);
                                     }
                                   },
@@ -354,7 +445,7 @@ class _SubmitDailyTaskHostScreenState extends State<SubmitDailyTaskHostScreen> {
           child: SizedBox(
             width: 250,
             child: DropdownButtonFormField<int>(
-              value: blockerProject,
+              initialValue: blockerProject,
               decoration: _inputDecoration('Select Project'),
               items: _projectListController.projectname
                   .asMap()
@@ -374,7 +465,7 @@ class _SubmitDailyTaskHostScreenState extends State<SubmitDailyTaskHostScreen> {
           ),
         ),
         Container(
-          width: double.infinity, // make sure it can expand
+          width: double.infinity,
           padding: const EdgeInsets.all(10),
           decoration: _boxStyle(),
           child: TextFormField(
@@ -382,8 +473,8 @@ class _SubmitDailyTaskHostScreenState extends State<SubmitDailyTaskHostScreen> {
             decoration: _inputDecoration(
               "Describe any blockers or issues you faced",
             ),
-            minLines: 3, // starts with 3 lines
-            maxLines: null, // grows
+            minLines: 3,
+            maxLines: null,
             keyboardType: TextInputType.multiline,
             textInputAction: TextInputAction.newline,
           ),
@@ -435,7 +526,7 @@ class _SubmitDailyTaskHostScreenState extends State<SubmitDailyTaskHostScreen> {
               SizedBox(
                 width: 250,
                 child: DropdownButtonFormField<int>(
-                  value: section.selectedProject,
+                  initialValue: section.selectedProject,
                   decoration: _inputDecoration('Select Project'),
                   items: _projectListController.projectname
                       .asMap()
@@ -446,8 +537,7 @@ class _SubmitDailyTaskHostScreenState extends State<SubmitDailyTaskHostScreen> {
                           child: Text(
                             _projectListController.projectname[entry.key],
                             style: const TextStyle(fontSize: 14),
-                            overflow: TextOverflow
-                                .ellipsis, // optional: trims long text
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       )
@@ -537,11 +627,10 @@ class _SubmitDailyTaskHostScreenState extends State<SubmitDailyTaskHostScreen> {
                     )
                   : null,
             ),
-            maxLines: null, // 🔹 Makes the text field expand dynamically
-            minLines: 1, // 🔹 Starts with one line
+            maxLines: null,
+            minLines: 1,
             keyboardType: TextInputType.multiline,
           ),
-
           const SizedBox(height: 6),
           _buildTimeAndStatus(section, taskIndex),
         ],
@@ -611,7 +700,7 @@ class _SubmitDailyTaskHostScreenState extends State<SubmitDailyTaskHostScreen> {
         const SizedBox(width: 8),
         Expanded(
           child: DropdownButtonFormField<String>(
-            value: section.statusList[taskIndex],
+            initialValue: section.statusList[taskIndex],
             decoration: _inputDecoration("Status"),
             items: const [
               DropdownMenuItem(value: "pending", child: Text("Pending")),

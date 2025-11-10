@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:message_notifier/config/app_colors.dart';
 import 'package:message_notifier/features/employees/view/emp_dashboard_items_screen.dart';
 import 'package:message_notifier/features/employees/view/standup_history_screen.dart';
-import 'package:message_notifier/features/employees/view/meetings_update_screen.dart';
-import 'package:message_notifier/features/employees/view/notification_screen.dart';
-import 'package:message_notifier/features/employees/view/emp_profile_screen.dart';
 import 'package:message_notifier/features/employees/view/submit_daily_task_emp_screen.dart';
 
 class EmpDashboardScreen extends StatefulWidget {
@@ -51,6 +48,35 @@ class _EmpDashboardScreenState extends State<EmpDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: currentIndex == 1
+          ? AppBar(
+              leading: IconButton(
+                onPressed: () {
+                  setState(() {
+                    currentIndex = 0;
+                  });
+                },
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                ),
+              ),
+              title: Text("Standup History"),
+              centerTitle: true,
+              foregroundColor: Colors.white,
+              iconTheme: IconThemeData(color: Colors.white),
+              backgroundColor: AppColors.dark_teal,
+            )
+          : null,
+
       extendBody: true,
 
       body: Container(

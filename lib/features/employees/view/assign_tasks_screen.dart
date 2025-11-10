@@ -169,7 +169,7 @@ class _AssignTasksScreenState extends State<AssignTasksScreen> {
       }
 
       return DropdownButtonFormField<String>(
-        value: _selectedProject,
+        initialValue: _selectedProject,
         decoration: InputDecoration(
           labelText: "Select Project",
           labelStyle: const TextStyle(color: AppColors.white),
@@ -214,7 +214,7 @@ class _AssignTasksScreenState extends State<AssignTasksScreen> {
       }
 
       return DropdownButtonFormField<String>(
-        value: _selectedEmployee,
+        initialValue: _selectedEmployee,
         decoration: InputDecoration(
           labelText: "Assign to Employee",
           labelStyle: const TextStyle(color: AppColors.white),

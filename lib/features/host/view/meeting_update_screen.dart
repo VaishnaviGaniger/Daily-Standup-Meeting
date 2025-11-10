@@ -454,9 +454,14 @@ class _MeetingUpdateScreenState extends State<MeetingUpdateScreen> {
                                             Get.snackbar(
                                               "Meeting Cancelled",
                                               "Meeting removed from the list successfully!",
+                                              snackPosition:
+                                                  SnackPosition.BOTTOM,
                                               backgroundColor:
                                                   Colors.green.shade400,
                                               colorText: Colors.white,
+                                              margin: EdgeInsets.all(12),
+                                              borderRadius: 8,
+                                              duration: Duration(seconds: 2),
                                             );
                                           }
                                         },

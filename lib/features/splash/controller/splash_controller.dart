@@ -3,9 +3,7 @@ import 'package:message_notifier/common/widgets/update_available_alert.dart';
 import 'package:message_notifier/core/services/shared_prefs_service.dart';
 import 'package:message_notifier/core/utils/auth_helper.dart';
 import 'package:message_notifier/features/auth/view/login_screen.dart';
-import 'package:message_notifier/features/employees/view/emp_dashboard_items_screen.dart';
 import 'package:message_notifier/features/employees/view/emp_dashboard_screen.dart';
-import 'package:message_notifier/features/host/view/host_dashboard_items_Screen.dart';
 import 'package:message_notifier/features/host/view/host_dashboard_screen.dart';
 import 'package:new_version_plus/new_version_plus.dart';
 import 'package:message_notifier/common/widgets/no_internet_connections.dart';
@@ -61,10 +59,16 @@ class SplashController extends GetxController {
   }
 
   Future<void> startApp() async {
-    final token = await SharedPrefsService.getToken();
-    final role = await SharedPrefsService.getRole();
+    final token = SharedPrefsService.getToken();
+    final role = (SharedPrefsService.getRole())?.toLowerCase().trim();
 
-    if (AuthHelper.isUserLogged()) {
+    final loggedIn = await AuthHelper.isUserLogged();
+
+    print("Token: $token");
+    print("role: $role");
+    print("Is user logged: $loggedIn");
+
+    if (loggedIn) {
       if (role == 'lead') {
         Get.offAll(() => HostDashboardScreen());
       } else if (role == 'employee') {
@@ -72,9 +76,29 @@ class SplashController extends GetxController {
       } else {
         Get.offAll(() => LoginScreen());
       }
-      //neeed to set homescreen later
     } else {
-      Get.off(() => LoginScreen());
+      Get.offAll(() => LoginScreen());
     }
   }
+
+  // Future<void> startApp() async {
+  //   final token = await SharedPrefsService.getToken();
+  //   final designation = await SharedPrefsService.getRole();
+
+  //   print("Token: $token");
+  //   print("designation: $designation");
+  //   print("Is user logged: ${AuthHelper.isUserLogged()}");
+
+  //   if (await AuthHelper.isUserLogged()) {
+  //     if (designation == 'team lead') {
+  //       Get.offAll(() => HostDashboardScreen());
+  //     } else if (designation == 'employee') {
+  //       Get.offAll(() => EmpDashboardScreen());
+  //     } else {
+  //       Get.offAll(() => LoginScreen());
+  //     }
+  //   } else {
+  //     Get.off(() => LoginScreen());
+  //   }
+  // }
 }

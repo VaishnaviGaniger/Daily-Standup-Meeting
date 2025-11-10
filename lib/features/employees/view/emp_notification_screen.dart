@@ -31,64 +31,121 @@ class _NotificationScreenState extends State<NotificationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: const Text(
-          "Notifications",
-          style: TextStyle(
-            color: AppColors.white,
-            fontWeight: FontWeight.w700,
-            fontSize: 20,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: AppColors.rich_teal,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.white),
-          onPressed: () => Get.back(),
-        ),
-      ),
-      body: RefreshIndicator(
-        onRefresh: () => _meetingUpdateController.fetchMeetingupdates(),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Obx(
-              () => _meetingUpdateController.isLoading.value
-                  ? const Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.rich_teal,
+      // appBar: AppBar(
+      //   title: const Text(
+      //     "Notifications",
+      //     style: TextStyle(
+      //       color: AppColors.white,
+      //       fontWeight: FontWeight.w700,
+      //       fontSize: 20,
+      //     ),
+      //   ),
+      //   centerTitle: true,
+      //   backgroundColor: AppColors.rich_teal,
+      //   elevation: 0,
+      //   leading: IconButton(
+      //     icon: const Icon(Icons.arrow_back, color: AppColors.white),
+      //     onPressed: () => Get.back(),
+      //   ),
+      // ),
+      body: Column(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF00796B), Color(0xFF26A69A)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
+              boxShadow: [
+                BoxShadow(
+                  color: Color(0x33000000),
+                  blurRadius: 12,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            child: SafeArea(
+              child: AppBar(
+                elevation: 0,
+                backgroundColor: Colors.transparent,
+                surfaceTintColor: Colors.transparent,
+                title: const Text(
+                  "Notifications",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 20,
+                  ),
+                ),
+                centerTitle: true,
+                leading: Builder(
+                  builder: (context) => IconButton(
+                    icon: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                    )
-                  : _meetingUpdateController.meetings.isEmpty
-                  ? _buildEmptyState()
-                  : RefreshIndicator(
-                      color: AppColors.rich_teal,
-                      onRefresh: () async =>
-                          await _meetingUpdateController.fetchMeetingupdates(),
-                      child: ListView.builder(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        itemCount: _meetingUpdateController.meetings.length,
-                        itemBuilder: (context, index) {
-                          final sortedMeetings =
-                              List.from(_meetingUpdateController.meetings)
-                                ..sort((a, b) {
-                                  final aDateTime = DateTime.parse(
-                                    "${a.meeting_date} ${a.meeting_time}",
-                                  );
-                                  final bDateTime = DateTime.parse(
-                                    "${b.meeting_date} ${b.meeting_time}",
-                                  );
-                                  return bDateTime.compareTo(aDateTime);
-                                });
-                          final meeting = sortedMeetings[index];
-                          return _buildMeetingCard(meeting);
-                        },
+                      child: const Icon(
+                        Icons.arrow_back_rounded,
+                        color: Colors.white,
+                        size: 22,
                       ),
                     ),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+              ),
             ),
           ),
-        ),
+          RefreshIndicator(
+            onRefresh: () => _meetingUpdateController.fetchMeetingupdates(),
+            child: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
+                child: Obx(
+                  () => _meetingUpdateController.isLoading.value
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.rich_teal,
+                          ),
+                        )
+                      : _meetingUpdateController.meetings.isEmpty
+                      ? _buildEmptyState()
+                      : RefreshIndicator(
+                          color: AppColors.rich_teal,
+                          onRefresh: () async => await _meetingUpdateController
+                              .fetchMeetingupdates(),
+                          child: ListView.builder(
+                            physics: const AlwaysScrollableScrollPhysics(),
+                            itemCount: _meetingUpdateController.meetings.length,
+                            itemBuilder: (context, index) {
+                              final sortedMeetings =
+                                  List.from(_meetingUpdateController.meetings)
+                                    ..sort((a, b) {
+                                      final aDateTime = DateTime.parse(
+                                        "${a.meeting_date} ${a.meeting_time}",
+                                      );
+                                      final bDateTime = DateTime.parse(
+                                        "${b.meeting_date} ${b.meeting_time}",
+                                      );
+                                      return bDateTime.compareTo(aDateTime);
+                                    });
+                              final meeting = sortedMeetings[index];
+                              return _buildMeetingCard(meeting);
+                            },
+                          ),
+                        ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

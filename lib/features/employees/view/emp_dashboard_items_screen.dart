@@ -5,8 +5,9 @@ import 'package:message_notifier/features/employees/controller/meeting_update_co
 import 'package:message_notifier/features/employees/controller/standup_history_controller.dart';
 import 'package:message_notifier/features/employees/view/List_of_teammates_screen.dart';
 import 'package:message_notifier/features/employees/view/assign_tasks_screen.dart';
+import 'package:message_notifier/features/employees/view/emp_blockers_screen.dart';
 import 'package:message_notifier/features/employees/view/emp_profile_screen.dart';
-import 'package:message_notifier/features/employees/view/notification_screen.dart';
+import 'package:message_notifier/features/employees/view/emp_notification_screen.dart';
 import 'package:message_notifier/features/employees/view/pending_tasks_employee_screen.dart';
 import 'package:message_notifier/features/employees/view/todays_plans_screen_employee.dart';
 
@@ -215,24 +216,24 @@ class _EmpDashboardItemsScreenState extends State<EmpDashboardItemsScreen> {
                       ),
                     ),
                   ),
-                  const Divider(
-                    height: 0,
-                    thickness: 0.5,
-                    indent: 56,
-                    endIndent: 16,
-                    color: Color(0xFFE2E8F0),
-                  ),
-                  _buildDrawerTile(
-                    icon: Icons.group_add_rounded,
-                    title: "Add Teammates",
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const ListOfTeammatesScreen(),
-                      ),
-                    ),
-                  ),
 
+                  // const Divider(
+                  //   height: 0,
+                  //   thickness: 0.5,
+                  //   indent: 56,
+                  //   endIndent: 16,
+                  //   color: Color(0xFFE2E8F0),
+                  // ),
+                  // _buildDrawerTile(
+                  //   icon: Icons.group_add_rounded,
+                  //   title: "Add Teammates",
+                  //   onTap: () => Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //       builder: (_) => const ListOfTeammatesScreen(),
+                  //     ),
+                  //   ),
+                  // ),
                   const SizedBox(height: 40),
                   Center(
                     child: Opacity(
@@ -271,7 +272,7 @@ class _EmpDashboardItemsScreenState extends State<EmpDashboardItemsScreen> {
             backgroundColor: Colors.white,
             child: Text(
               _empProfileController.profile.value?.username
-                      ?.substring(0, 1)
+                      .substring(0, 1)
                       .toUpperCase() ??
                   'E',
               style: const TextStyle(
@@ -414,13 +415,6 @@ class _EmpDashboardItemsScreenState extends State<EmpDashboardItemsScreen> {
             // physics: NeverScrollableScrollPhysics(),
             children: [
               _buildCompactActionCard(
-                icon: Icons.assignment_turned_in_rounded,
-                label: "Submit Daily Tasks",
-                gradient: const [Color(0xFF00796B), Color(0xFF26A69A)],
-                onTap: () {},
-              ),
-              const SizedBox(width: 2),
-              _buildCompactActionCard(
                 icon: Icons.rocket_launch_rounded,
                 label: "Today's Plans",
                 gradient: const [Color(0xFF3B82F6), Color(0xFF60A5FA)],
@@ -433,6 +427,17 @@ class _EmpDashboardItemsScreenState extends State<EmpDashboardItemsScreen> {
                 gradient: const [Color(0xFFF59E0B), Color(0xFFFBBF24)],
                 onTap: () => Get.to(() => PendingTasksEmployeeScreen()),
               ),
+              const SizedBox(width: 2),
+              _buildCompactActionCard(
+                icon: Icons.assignment_turned_in_rounded,
+                label: "Blockers",
+                gradient: const [
+                  Color.fromARGB(255, 207, 19, 12),
+                  Color.fromARGB(255, 166, 38, 38),
+                ],
+                onTap: () => Get.to(() => EmpBlockersScreen()),
+              ),
+
               //const SizedBox(width: 12),
               // _buildModernActionCard(
               //   icon: Icons.groups_rounded,

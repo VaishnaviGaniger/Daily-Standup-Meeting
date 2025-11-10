@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:message_notifier/config/api_constants.dart';
 import 'package:message_notifier/core/services/shared_prefs_service.dart';
 

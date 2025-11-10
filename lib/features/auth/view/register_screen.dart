@@ -1,12 +1,10 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:message_notifier/config/api_constants.dart';
 import 'package:message_notifier/config/app_colors.dart';
 import 'package:message_notifier/core/services/api_services.dart';
-import 'package:message_notifier/core/services/shared_prefs_service.dart';
 import 'package:message_notifier/features/auth/controller/register_screen_controller.dart';
-import 'package:message_notifier/features/auth/model/registerFcmToken_model.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -30,6 +28,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final RegisterScreenController controller = Get.put(
     RegisterScreenController(),
   );
+
+  String? passwordValidator(String? value) {
+    final v = value ?? '';
+    if (v.isEmpty) return 'Please enter your password';
+    if (v.length < 8) return 'Password must be at least 8 characters';
+    if (v.length > 64) return 'Password must be at most 64 characters';
+    if (RegExp(r'\s').hasMatch(v)) return 'Password must not contain spaces';
+    if (!RegExp(r'[A-Z]').hasMatch(v))
+      return 'Include at least 1 uppercase letter (A–Z)';
+    if (!RegExp(r'[a-z]').hasMatch(v))
+      return 'Include at least 1 lowercase letter (a–z)';
+    if (!RegExp(r'\d').hasMatch(v)) return 'Include at least 1 number (0–9)';
+
+    // At least one symbol: anything that is NOT a word char (A–Z, a–z, 0–9, _)
+    // and NOT whitespace. This avoids the quote-in-raw-string problem.
+    if (!RegExp(r'[^\w\s]').hasMatch(v)) {
+      return 'Include at least 1 special character (e.g. ! @ # \$ %)';
+    }
+
+    return null;
+  }
+
+  String? confirmPasswordValidator(String? value, String original) {
+    if (value == null || value.isEmpty) return 'Please confirm your password';
+    if (value != original) return 'Passwords do not match';
+    return null;
+  }
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
@@ -157,19 +182,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             isPassword: true,
                             obscureText: _obscurePassword,
                             onToggleVisibility: () {
-                              setState(() {
-                                _obscurePassword = !_obscurePassword;
-                              });
+                              setState(
+                                () => _obscurePassword = !_obscurePassword,
+                              );
                             },
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your password';
-                              }
-                              if (value.length < 5) {
-                                return 'Password must be at least 5 characters';
-                              }
-                              return null;
-                            },
+                            inputFormatters: [
+                              FilteringTextInputFormatter.deny(
+                                RegExp(r'\s'),
+                              ), // no spaces
+                            ],
+                            validator: passwordValidator,
                           ),
 
                           SizedBox(height: 16),
@@ -182,20 +204,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             isPassword: true,
                             obscureText: _obscureConfirmPassword,
                             onToggleVisibility: () {
-                              setState(() {
-                                _obscureConfirmPassword =
-                                    !_obscureConfirmPassword;
-                              });
+                              setState(
+                                () => _obscureConfirmPassword =
+                                    !_obscureConfirmPassword,
+                              );
                             },
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please confirm your password';
-                              }
-                              if (value != passwordController.text) {
-                                return 'Passwords do not match';
-                              }
-                              return null;
-                            },
+                            inputFormatters: [
+                              FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                            ],
+                            validator: (value) => confirmPasswordValidator(
+                              value,
+                              passwordController.text,
+                            ),
                           ),
 
                           SizedBox(height: 16),
@@ -206,6 +226,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             hint: 'Enter your phone number',
                             icon: Icons.phone_outlined,
                             keyboardType: TextInputType.phone,
+                            inputFormatters: [
+                              LengthLimitingTextInputFormatter(10),
+                              FilteringTextInputFormatter
+                                  .digitsOnly, // only numbers allowed
+                            ],
+
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your phone number';
@@ -237,7 +263,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                           _buildInputField(
                             controller: dobController,
-                            label: 'Date of Birth',
+                            label: 'Date of Registerion',
                             hint: 'DD/MM/YYYY',
                             icon: Icons.calendar_today_outlined,
                             readOnly: true,
@@ -340,9 +366,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                 borderRadius:
                                                     BorderRadius.circular(12),
                                               ),
+                                              margin: EdgeInsets.only(
+                                                top: 20,
+                                                left: 20,
+                                                right: 20,
+                                              ),
                                               duration: Duration(seconds: 3),
                                             ),
                                           );
+
                                           Get.back();
                                         }
                                       },
@@ -420,6 +452,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     bool readOnly = false,
     int maxLines = 1,
     TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
     VoidCallback? onToggleVisibility,
     VoidCallback? onTap,
     String? Function(String?)? validator,
@@ -448,6 +481,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
             readOnly: readOnly,
             maxLines: maxLines,
             keyboardType: keyboardType,
+            inputFormatters: inputFormatters,
+
             onTap: onTap,
             style: TextStyle(color: Colors.grey[800], fontSize: 16),
             decoration: InputDecoration(

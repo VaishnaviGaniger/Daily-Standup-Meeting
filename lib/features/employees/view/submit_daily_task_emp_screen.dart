@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:message_notifier/config/app_colors.dart';
 import 'package:message_notifier/features/employees/controller/project_list_controller.dart';
 import 'package:message_notifier/features/employees/controller/submit_daily_task_controller.dart';
-import 'package:message_notifier/features/host/model/submit_daily_tasks_model.dart';
+import 'package:message_notifier/features/common_model/submit_daily_tasks_model.dart';
 
 class SubmitDailyTaskEmpScreen extends StatefulWidget {
   const SubmitDailyTaskEmpScreen({super.key});
@@ -32,10 +32,44 @@ class _SubmitDailyTaskEmpScreenState extends State<SubmitDailyTaskEmpScreen> {
   final TextEditingController blockersController = TextEditingController();
   int? blockerProject;
 
+  // --------- cutoff lockout -------------
+  bool _lockedOut = false;
+
+  void _checkCutoff() {
+    final now = DateTime.now();
+    final cutoff = DateTime(now.year, now.month, now.day, 10, 30); // 10:30 AM
+    if (now.isAfter(cutoff)) {
+      _lockedOut = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Get.defaultDialog(
+          title: "Submissions closed",
+          titleStyle: const TextStyle(
+            fontWeight: FontWeight.w700,
+            color: AppColors.rich_teal,
+          ),
+          middleText: "It's past 10:30 AM. You should submit before 10:30 AM.",
+          textConfirm: "OK",
+          confirmTextColor: Colors.white,
+          onConfirm: () {
+            Get.back(); // close dialog
+            Navigator.of(context).pop(); // leave this page
+          },
+          barrierDismissible: false,
+          buttonColor: const Color(0xFF2E8B7F),
+          radius: 10,
+        );
+      });
+    }
+  }
+  // --------------------------------------
+
   @override
   void initState() {
     super.initState();
-    _projectListController.fetchProjectList();
+    _checkCutoff();
+    if (!_lockedOut) {
+      _projectListController.fetchProjectList();
+    }
   }
 
   @override
@@ -52,8 +86,65 @@ class _SubmitDailyTaskEmpScreenState extends State<SubmitDailyTaskEmpScreen> {
     return "${hr.toString().padLeft(2, '0')}:${min.toString().padLeft(2, '0')}";
   }
 
+  bool _sectionHasAnyTask(List<ProjectSection> sections) {
+    // A section counts only if a project is selected AND any task has non-empty text
+    for (final s in sections) {
+      if (s.selectedProject != null) {
+        final hasText = s.controllersy.any((c) => c.text.trim().isNotEmpty);
+        if (hasText) return true;
+      }
+    }
+    return false;
+  }
+
+  void _showRequiredPopup(String title, String message) {
+    Get.defaultDialog(
+      title: title,
+      titleStyle: const TextStyle(
+        fontWeight: FontWeight.w700,
+        color: AppColors.rich_teal,
+      ),
+      middleText: message,
+      textConfirm: "OK",
+      confirmTextColor: Colors.white,
+      onConfirm: () => Get.back(),
+      buttonColor: const Color(0xFF2E8B7F),
+      radius: 10,
+    );
+  }
+
+  bool _validateRequiredPages() {
+    final hasYesterday = _sectionHasAnyTask(_pageProjectSections[0]);
+    final hasToday = _sectionHasAnyTask(_pageProjectSections[1]);
+
+    if (!hasYesterday || !hasToday) {
+      final missingPage = !hasYesterday ? 0 : 1;
+      _pageController.animateToPage(
+        missingPage,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+
+      _showRequiredPopup(
+        "Add required updates",
+        !hasYesterday && !hasToday
+            ? "Please add at least one project and task in both:\n• Yesterday's Tasks\n• Today's Plans"
+            : !hasYesterday
+            ? "Please add at least one project and task in Yesterday's Tasks."
+            : "Please add at least one project and task in Today's Plans.",
+      );
+      return false;
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Short-circuit UI if locked out (dialog is already shown and page will pop)
+    if (_lockedOut) {
+      return const Scaffold(backgroundColor: Colors.white);
+    }
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8FAFA),
       body: Container(
@@ -97,7 +188,6 @@ class _SubmitDailyTaskEmpScreenState extends State<SubmitDailyTaskEmpScreen> {
                             : _currentPage == 1
                             ? "Today's Plans"
                             : "Blockers & Challenges",
-
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           color: AppColors.white,
@@ -214,55 +304,91 @@ class _SubmitDailyTaskEmpScreenState extends State<SubmitDailyTaskEmpScreen> {
                                         curve: Curves.easeInOut,
                                       );
                                     } else {
+                                      // ✅ Require Yesterday & Today
+                                      if (!_validateRequiredPages()) return;
+
                                       final model = SubmitDailyUpdatesModel(
-                                        yesterday: _pageProjectSections[0].map((
-                                          section,
-                                        ) {
-                                          return YesterdayTask(
-                                            projectId:
-                                                section.selectedProject ?? 0,
-                                            tasks: List.generate(
-                                              section.controllersy.length,
-                                              (index) => Task(
-                                                description: section
-                                                    .controllersy[index]
-                                                    .text,
-                                                time: convertToTimeFormat(
-                                                  section
-                                                      .timeControllers[index]
-                                                      .text,
-                                                ),
-                                                status:
-                                                    section.statusList[index],
+                                        // keep only rows with a project selected AND at least one non-empty task
+                                        yesterday: _pageProjectSections[0]
+                                            .where(
+                                              (s) =>
+                                                  s.selectedProject != null &&
+                                                  s.controllersy.any(
+                                                    (c) => c.text
+                                                        .trim()
+                                                        .isNotEmpty,
+                                                  ),
+                                            )
+                                            .map(
+                                              (s) => YesterdayTask(
+                                                projectId:
+                                                    s.selectedProject ?? 0,
+                                                // keep only non-empty tasks
+                                                tasks: List.generate(
+                                                  s.controllersy.length,
+                                                  (i) {
+                                                    final desc = s
+                                                        .controllersy[i]
+                                                        .text
+                                                        .trim();
+                                                    if (desc.isEmpty) {
+                                                      return null;
+                                                    }
+                                                    return Task(
+                                                      description: desc,
+                                                      time: convertToTimeFormat(
+                                                        s
+                                                            .timeControllers[i]
+                                                            .text,
+                                                      ),
+                                                      status: s.statusList[i],
+                                                    );
+                                                  },
+                                                ).whereType<Task>().toList(),
                                               ),
-                                            ),
-                                          );
-                                        }).toList(),
+                                            )
+                                            .toList(),
 
-                                        today: _pageProjectSections[1].map((
-                                          section,
-                                        ) {
-                                          return TodayTask(
-                                            projectId:
-                                                section.selectedProject ?? 0,
-                                            tasks: List.generate(
-                                              section.controllersy.length,
-                                              (index) => Task(
-                                                description: section
-                                                    .controllersy[index]
-                                                    .text,
-                                                time: convertToTimeFormat(
-                                                  section
-                                                      .timeControllers[index]
-                                                      .text,
-                                                ),
-                                                status:
-                                                    section.statusList[index],
+                                        today: _pageProjectSections[1]
+                                            .where(
+                                              (s) =>
+                                                  s.selectedProject != null &&
+                                                  s.controllersy.any(
+                                                    (c) => c.text
+                                                        .trim()
+                                                        .isNotEmpty,
+                                                  ),
+                                            )
+                                            .map(
+                                              (s) => TodayTask(
+                                                projectId:
+                                                    s.selectedProject ?? 0,
+                                                tasks: List.generate(
+                                                  s.controllersy.length,
+                                                  (i) {
+                                                    final desc = s
+                                                        .controllersy[i]
+                                                        .text
+                                                        .trim();
+                                                    if (desc.isEmpty) {
+                                                      return null;
+                                                    }
+                                                    return Task(
+                                                      description: desc,
+                                                      time: convertToTimeFormat(
+                                                        s
+                                                            .timeControllers[i]
+                                                            .text,
+                                                      ),
+                                                      status: s.statusList[i],
+                                                    );
+                                                  },
+                                                ).whereType<Task>().toList(),
                                               ),
-                                            ),
-                                          );
-                                        }).toList(),
+                                            )
+                                            .toList(),
 
+                                        // 🔓 Blockers stay optional
                                         blockers:
                                             (blockerProject != null &&
                                                 blockersController.text
@@ -339,8 +465,8 @@ class _SubmitDailyTaskEmpScreenState extends State<SubmitDailyTaskEmpScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
-          children: [
-            const Text(
+          children: const [
+            Text(
               "  Any Blockers?",
               style: TextStyle(
                 fontSize: 16,
@@ -348,6 +474,7 @@ class _SubmitDailyTaskEmpScreenState extends State<SubmitDailyTaskEmpScreen> {
                 color: AppColors.rich_teal,
               ),
             ),
+            SizedBox(width: 6),
             Text("(Optional)", style: TextStyle(fontSize: 14)),
           ],
         ),
@@ -359,7 +486,7 @@ class _SubmitDailyTaskEmpScreenState extends State<SubmitDailyTaskEmpScreen> {
           child: SizedBox(
             width: 250,
             child: DropdownButtonFormField<int>(
-              value: blockerProject,
+              initialValue: blockerProject,
               decoration: _inputDecoration('Select Project'),
               items: _projectListController.projectname
                   .asMap()
@@ -438,7 +565,7 @@ class _SubmitDailyTaskEmpScreenState extends State<SubmitDailyTaskEmpScreen> {
               SizedBox(
                 width: 250,
                 child: DropdownButtonFormField<int>(
-                  value: section.selectedProject,
+                  initialValue: section.selectedProject,
                   decoration: _inputDecoration('Select Project'),
                   items: _projectListController.projectname
                       .asMap()
@@ -538,12 +665,11 @@ class _SubmitDailyTaskEmpScreenState extends State<SubmitDailyTaskEmpScreen> {
                     )
                   : null,
             ),
-            maxLines: null, // 🔹 Makes the text field expand dynamically
-            minLines: 1, // 🔹 Starts with one line
+            maxLines: null, // expands dynamically
+            minLines: 1,
             keyboardType: TextInputType.multiline,
           ),
           const SizedBox(height: 6),
-
           _buildTimeAndStatus(section, taskIndex),
         ],
       ),
@@ -612,7 +738,7 @@ class _SubmitDailyTaskEmpScreenState extends State<SubmitDailyTaskEmpScreen> {
         const SizedBox(width: 8),
         Expanded(
           child: DropdownButtonFormField<String>(
-            value: section.statusList[taskIndex],
+            initialValue: section.statusList[taskIndex],
             decoration: _inputDecoration("Status"),
             items: const [
               DropdownMenuItem(value: "pending", child: Text("Pending")),

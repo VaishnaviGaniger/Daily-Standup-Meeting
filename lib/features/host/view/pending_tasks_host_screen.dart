@@ -47,7 +47,7 @@ class _PendingTasksHostScreenState extends State<PendingTasksHostScreen> {
                 elevation: 0,
                 backgroundColor: Colors.transparent,
                 surfaceTintColor: Colors.transparent,
-                title: const Text(
+                title: Text(
                   "Pending Tasks",
                   style: TextStyle(
                     color: Colors.white,

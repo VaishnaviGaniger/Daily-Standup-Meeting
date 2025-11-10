@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:message_notifier/config/app_colors.dart';
 import 'package:message_notifier/core/services/shared_prefs_service.dart';
@@ -12,11 +13,10 @@ import 'firebase_options.dart';
 late SharedPreferences pref;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await GetStorage.init(); // required for persistence
   await SharedPrefsService.init();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
   await FirebaseMsg().initFCM();
-
   runApp(const MyApp());
 }
 

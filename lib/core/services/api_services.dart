@@ -12,9 +12,9 @@ import 'package:message_notifier/features/host/model/updates_from_employee.dart'
 import 'package:message_notifier/features/host/model/approve_user_model.dart';
 import 'package:message_notifier/features/host/model/host_profile_model.dart';
 import 'package:message_notifier/features/host/model/requesting_user_model.dart';
-import 'package:message_notifier/features/host/model/submit_daily_tasks_model.dart';
+import 'package:message_notifier/features/common_model/submit_daily_tasks_model.dart';
 
-final basicAuth = 'Basic ${base64Encode(utf8.encode('why:why'))}';
+final basicAuth = 'Basic ${base64Encode(utf8.encode('gfgtech:gfggfg'))}';
 var dio = Dio();
 
 class ApiServices {
@@ -90,7 +90,40 @@ class ApiServices {
     }
   }
 
+  //------------------------------------------------------------------------------
+
   //  --------------------------------  HOST  ------------------------------------
+
+  static Future<HostProfileModel> hostProfile() async {
+    try {
+      final response = await DioService.getMethod(
+        url: ApiConstants.empprofile,
+        headers: _headersWithToken(),
+      );
+      if (response.success) {
+        return HostProfileModel.fromJson(response.data);
+      } else {
+        throw Exception(response.data);
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  static Future updatehostprofile(Map<String, dynamic> input) async {
+    final response = await DioService.patchMethod(
+      url: ApiConstants.updateprofile,
+      headers: _headersWithToken(),
+      input: input,
+    );
+    if (response.success) {
+      print("Successful response");
+      return response.data;
+    } else {
+      print("Failed to update");
+      throw Exception("Response: ${response.error}");
+    }
+  }
 
   Future createproject(Map<String, dynamic> input) async {
     try {
@@ -108,27 +141,6 @@ class ApiServices {
       rethrow;
     }
   }
-
-  // static Future<List<RequestingUserModel>> requestingUserData() async {
-  //   try {
-  //     final response = await dio.get(
-  //       ApiConstants.requestingUser,
-  //       options: Options(headers: _headersWithToken()),
-  //     );
-  //     if (response.statusCode == 200 || response.statusCode == 201) {
-  //       final userdata = response.data;
-  //       final List<RequestingUserModel> user = [];
-  //       for (var i in userdata) {
-  //         user.add(RequestingUserModel.fromJson(i));
-  //       }
-  //       return user;
-  //     } else {
-  //       throw Exception("Error");
-  //     }
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-  // }
 
   static Future<List<ApproveUserModel>> approvedUser() async {
     try {
@@ -249,26 +261,6 @@ class ApiServices {
     }
   }
 
-  // static Future<List<StandupHistoryModel>> standupHistoryhost() async {
-  //   try {
-  //     final response = await DioService.getMethod(
-  //       url: ApiConstants.standupHistory,
-  //       headers: _headersWithToken(),
-  //     );
-  //     if (response.success) {
-  //       final List<StandupHistoryModel> responsehistory = [];
-  //       for (var i in response.data) {
-  //         responsehistory.add(StandupHistoryModel.fromJson(i));
-  //       }
-  //       return responsehistory;
-  //     } else {
-  //       throw Exception(response.error);
-  //     }
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-  // }
-
   static Future<List<MeetingsUpdateModel>> meetingupdateHost() async {
     try {
       final response = await DioService.getMethod(
@@ -280,9 +272,6 @@ class ApiServices {
         for (var i in response.data) {
           responsehistory.add(MeetingsUpdateModel.fromJson(i));
         }
-        // print("Response:$response ");
-        // print("Response 2: $responsehistory");
-
         return responsehistory;
       } else {
         throw Exception(response.error);
@@ -318,6 +307,61 @@ class ApiServices {
       rethrow;
     }
   }
+
+  //-------------------------------- host and employee -----------------
+
+  static Future<StandupHistoryModel> standupHistory({
+    required String date,
+  }) async {
+    try {
+      final response = await DioService.getMethod(
+        url: "${ApiConstants.standupHistory}$date",
+        headers: _headersWithToken(),
+      );
+
+      print("✅ API raw response: $response");
+      if (response.success) {
+        return StandupHistoryModel.fromJson(response.data);
+      } else {
+        return StandupHistoryModel.fromJson(response.data);
+      }
+    } catch (e) {
+      print("❌ Error in standupHistory(): $e");
+      rethrow;
+    }
+  }
+
+  static Future<SubmitDailyUpdateResponseModel> submitdailytasks(
+    Map<String, dynamic> input,
+  ) async {
+    try {
+      final response = await DioService.postMethod(
+        url: ApiConstants.submitdailytasks,
+        headers: _headersWithToken(),
+        input: input,
+      );
+      if (response.success) {
+        if (response.data is Map<String, dynamic>) {
+          print('one');
+
+          return SubmitDailyUpdateResponseModel.fromJson(response.data);
+        } else {
+          print('two');
+
+          return SubmitDailyUpdateResponseModel(
+            message: response.data.toString(),
+          );
+        }
+      } else {
+        throw Exception(response.error);
+      }
+    } catch (e) {
+      print('------------- ERROR : $e');
+      rethrow;
+    }
+  }
+
+  //  --------------------------------------------------------------------------------
 
   //  -------------------------------  EMPLOYEEE  ------------------------------------
   static Future<EmpProfileModel?> empprofile() async {
@@ -361,12 +405,7 @@ class ApiServices {
       }
       final response = await dio.post(
         ApiConstants.logout,
-        options: Options(
-          headers: {
-            'Authorization': 'Token $token',
-            'Content-Type': 'application/json',
-          },
-        ),
+        options: Options(headers: _headersWithToken()),
       );
       print("Status code: ${response.statusCode}");
       if (response.statusCode == 200 || response.statusCode == 201) {
@@ -392,27 +431,6 @@ class ApiServices {
       );
       if (response.success) {
         return response.data;
-      } else {
-        throw Exception(response.error);
-      }
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  static Future submitdailytask(Map<String, dynamic> input) async {
-    try {
-      final response = await DioService.postMethod(
-        url: ApiConstants.submitDailyTask,
-        headers: _headersWithToken(),
-        input: input,
-      );
-      if (response.success) {
-        final detail = response.data is Map && response.data['message'] != null
-            ? response.data['message'].toString()
-            : "Task submitted successfully.";
-
-        return SubmitDailyUpdateResponseModel(message: detail);
       } else {
         throw Exception(response.error);
       }
@@ -482,88 +500,5 @@ class ApiServices {
     }
   }
 
-  static Future<StandupHistoryModel> standupHistory({
-    required String date,
-  }) async {
-    try {
-      final response = await DioService.getMethod(
-        url:
-            "http://192.168.1.95:8000/api/SubmitDailyUpdateAPIView/?date=$date",
-        headers: _headersWithToken(),
-      );
-
-      print("✅ API raw response: $response");
-      if (response.success) {
-        return StandupHistoryModel.fromJson(response.data);
-      } else {
-        return StandupHistoryModel.fromJson(response.data);
-      }
-    } catch (e) {
-      print("❌ Error in standupHistory(): $e");
-      rethrow;
-    }
-  }
-
-  //----------------Employee---------------------//
-
-  static Future<HostProfileModel> hostProfile() async {
-    try {
-      final response = await DioService.getMethod(
-        url: ApiConstants.empprofile,
-        headers: _headersWithToken(),
-      );
-      if (response.success) {
-        return HostProfileModel.fromJson(response.data);
-      } else {
-        throw Exception(response.data);
-      }
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  static Future updatehostprofile(Map<String, dynamic> input) async {
-    final response = await DioService.patchMethod(
-      url: ApiConstants.updateprofile,
-      headers: _headersWithToken(),
-      input: input,
-    );
-    if (response.success) {
-      print("Successful response");
-      return response.data;
-    } else {
-      print("Failed to update");
-      throw Exception("Response: ${response.error}");
-    }
-  }
-
-  static Future<SubmitDailyUpdateResponseModel> submitdailytasks(
-    Map<String, dynamic> input,
-  ) async {
-    try {
-      final response = await DioService.postMethod(
-        url: "http://192.168.1.95:8000/api/SubmitDailyUpdateAPIView/",
-        headers: _headersWithToken(),
-        input: input,
-      );
-      if (response.success) {
-        if (response.data is Map<String, dynamic>) {
-          print('one');
-
-          return SubmitDailyUpdateResponseModel.fromJson(response.data);
-        } else {
-          print('two');
-
-          return SubmitDailyUpdateResponseModel(
-            message: response.data.toString(),
-          );
-        }
-      } else {
-        throw Exception(response.error);
-      }
-    } catch (e) {
-      print('------------- ERROR : $e');
-      rethrow;
-    }
-  }
+  //  ----------------------------------------------------------------------------
 }

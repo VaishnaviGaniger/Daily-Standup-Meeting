@@ -187,34 +187,6 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                               icon: Icons.email_outlined,
                               iconbutton: null,
                               isReadOnly: true,
-                              // onIconpressed: () {
-                              //   if (_formKey.currentState!.validate()) {
-                              //     final update = getUpdatedemail();
-                              //     if (update.isNotEmpty) {
-                              //       hostprofileController.updateProfile(update);
-                              //       Get.snackbar(
-                              //         "Success",
-                              //         "Email updated successfully",
-                              //         snackPosition: SnackPosition.BOTTOM,
-                              //       );
-                              //     } else {
-                              //       Get.snackbar(
-                              //         "Info",
-                              //         "No change detected",
-                              //         snackPosition: SnackPosition.BOTTOM,
-                              //       );
-                              //     }
-                              //   }
-                              // },
-                              // validator: (value) {
-                              //   if (value == null || value.isEmpty) {
-                              //     return "Please enter email";
-                              //   }
-                              //   if (!GetUtils.isEmail(value.trim())) {
-                              //     return "Enter valid email";
-                              //   }
-                              //   return null;
-                              // },
                             ),
 
                             const SizedBox(height: 20),
@@ -241,11 +213,26 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
                                 if (update.isNotEmpty) {
                                   hostprofileController.updateProfile(update);
                                   Get.snackbar(
-                                    "Updated Address Successfully",
-                                    "",
+                                    "✅ Updated Address Successfully",
+                                    "Your address has been updated.",
+                                    snackPosition: SnackPosition.TOP,
+                                    backgroundColor: Colors.green,
+                                    colorText: Colors.white,
+                                    margin: EdgeInsets.all(12),
+                                    borderRadius: 10,
+                                    duration: Duration(seconds: 2),
                                   );
                                 } else {
-                                  Get.snackbar("No Chnage detected", '');
+                                  Get.snackbar(
+                                    "No Change Detected",
+                                    "Nothing was updated.",
+                                    snackPosition: SnackPosition.TOP,
+                                    backgroundColor: Colors.orange,
+                                    colorText: Colors.white,
+                                    margin: EdgeInsets.all(12),
+                                    borderRadius: 10,
+                                    duration: Duration(seconds: 2),
+                                  );
                                 }
                               },
                             ),
@@ -380,7 +367,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
   Widget _buildDateField() {
     return _buildInputField(
       controller: dobController,
-      label: "Date of Birth",
+      label: "Date of Registerion",
       hint: "YYYY-MM-DD",
       icon: Icons.calendar_today,
       // isReadOnly: true,
@@ -404,14 +391,7 @@ class _HostProfileScreenState extends State<HostProfileScreen> {
     if (emailController.text.trim() != data.email) {
       updatedemail['email'] = emailController.text.trim();
     }
-    // final Map<String, dynamic> updatedaddress = {};
     return updatedemail;
-    // if (phoneController.text != data.phone)
-    //   updated['phone'] = phoneController.text;
-    // if (addressController.text != data.address)
-    //   updatedaddress['address'] = addressController.text;
-    // // if (dobController.text != data.dob) updated['dob'] = dobController.text;
-    // return updated;
   }
 
   Map<String, dynamic> getUpdatedaddress() {

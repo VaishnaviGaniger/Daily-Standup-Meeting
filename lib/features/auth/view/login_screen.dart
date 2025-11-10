@@ -29,6 +29,20 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> _resetPassword() async {
+    // final url = Uri.parse(
+    //   'https://dsync.gfgtech.live/password_reset/',
+    // ); // <-- replace
+    // final ok = await launchUrl(
+    //   url,
+    //   mode: LaunchMode.externalApplication, // opens default browser
+    // );
+    // if (!ok) {
+    //   // Optional: show a friendly message
+    //   throw Exception('Could not open the password reset page.');
+    // }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -160,7 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Align(
                             alignment: Alignment.centerRight,
                             child: TextButton(
-                              onPressed: () {},
+                              onPressed: _resetPassword,
                               style: TextButton.styleFrom(
                                 padding: EdgeInsets.symmetric(vertical: 8),
                               ),

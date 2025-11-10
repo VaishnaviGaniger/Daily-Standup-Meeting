@@ -120,7 +120,7 @@ class _ApprovalPendingState extends State<ApprovalPendingScreen> {
                                 SizedBox(
                                   width: 120, // Fixed width for compactness
                                   child: DropdownButtonFormField<String>(
-                                    value: user.selectedRole,
+                                    initialValue: user.selectedRole,
                                     hint: const Text(
                                       "Role",
                                       style: TextStyle(fontSize: 13),
@@ -225,12 +225,14 @@ class _ApprovalPendingState extends State<ApprovalPendingScreen> {
                                         user.id,
                                       );
                                       Get.snackbar(
-                                        "Rejected",
+                                        "❌ Rejected",
                                         "${user.username} rejected successfully",
-                                        snackPosition: SnackPosition.BOTTOM,
-                                        backgroundColor:
-                                            Colors.redAccent.shade400,
+                                        snackPosition: SnackPosition.TOP,
+                                        backgroundColor: Colors.redAccent,
                                         colorText: AppColors.white,
+                                        margin: EdgeInsets.all(12),
+                                        borderRadius: 10,
+                                        duration: Duration(seconds: 2),
                                       );
                                     },
                                     style: OutlinedButton.styleFrom(

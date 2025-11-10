@@ -2,7 +2,7 @@ name: message_notifier
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -56,8 +56,17 @@ dependencies:
   package_info_plus: ^8.3.0
   new_version_plus: ^0.1.1
   flutter_screenutil: ^5.9.3
-  
+  flutter_launcher_icons: ^0.14.4
+
 dev_dependencies:
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  image_path: "assets/icon.png" # a real PNG (ideally 1024x1024)
+  adaptive_icon_background: "#FFFFFF" # or a PNG path
+  adaptive_icon_foreground: "assets/icon.png" # or a dedicated foreground PNG
+  min_sdk_android: 21
+
   flutter_test:
     sdk: flutter
 
@@ -72,8 +81,11 @@ dev_dependencies:
 # following page: https://dart.dev/tools/pub/pubspec
 
 # The following section is specific to Flutter packages.
-flutter:
+flutter_icons:
+  android: true
+  image_path: "assets/images/dsm logo.jpg"
 
+flutter:
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:message_notifier/config/app_colors.dart';
 import 'package:message_notifier/core/services/api_services.dart';
 import 'package:message_notifier/features/employees/model/emp_profile_model.dart';
 
@@ -21,9 +23,27 @@ class UpdateProfileController extends GetxController {
     if (updatedData != null) {
       profile.value = updatedData; // update the model
       print("Update $updatedData");
-      Get.snackbar("Success", "Profile updated successfully");
+      Get.snackbar(
+        "✅ Success",
+        "Profile updated successfully",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.green,
+        colorText: AppColors.white,
+        margin: EdgeInsets.all(12),
+        borderRadius: 10,
+        duration: Duration(seconds: 2),
+      );
     } else {
-      Get.snackbar("Error", "Failed to update profile");
+      Get.snackbar(
+        "❌ Error",
+        "Failed to update profile",
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: AppColors.white,
+        margin: EdgeInsets.all(12),
+        borderRadius: 10,
+        duration: Duration(seconds: 2),
+      );
     }
     isLoading.value = false;
   }

@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:message_notifier/features/employees/controller/standup_history_controller.dart';
-import 'package:message_notifier/features/host/controller/cancel_meeting_controller.dart';
 import 'package:message_notifier/features/host/controller/host_profile_controller.dart';
-import 'package:message_notifier/features/host/controller/meeting_update_host_controller.dart';
 import 'package:message_notifier/features/host/controller/notification_controller_host.dart';
-import 'package:message_notifier/features/host/controller/submit_daily_tasks_controller.dart';
 import 'package:message_notifier/features/host/view/approval_pending_screen.dart';
 import 'package:message_notifier/features/host/view/create_project_screen.dart';
+import 'package:message_notifier/features/host/view/host_blockers_screen.dart';
 import 'package:message_notifier/features/host/view/host_notification_screen.dart';
 import 'package:message_notifier/features/host/view/host_profile_screen.dart';
 import 'package:message_notifier/features/host/view/pending_tasks_host_screen.dart';
@@ -222,7 +220,7 @@ class _HostDashboardHomeScreenState extends State<HostDashboardHomeScreen> {
                     backgroundColor: Colors.white,
                     child: Text(
                       _hostProfileController.hostProfile.value?.username
-                              ?.substring(0, 1)
+                              .substring(0, 1)
                               .toUpperCase() ??
                           'H',
                       style: const TextStyle(
@@ -298,19 +296,19 @@ class _HostDashboardHomeScreenState extends State<HostDashboardHomeScreen> {
                     endIndent: 16,
                     color: Color(0xFFE2E8F0),
                   ),
-                  _buildDrawerTile(
-                    icon: Icons.update_rounded,
-                    title: "Employee Updates",
-                    onTap: () =>
-                        Get.to(() => const UpdatesFromEmployeeScreen()),
-                  ),
-                  const Divider(
-                    height: 0,
-                    thickness: 0.5,
-                    indent: 56,
-                    endIndent: 16,
-                    color: Color(0xFFE2E8F0),
-                  ),
+                  // _buildDrawerTile(
+                  //   icon: Icons.update_rounded,
+                  //   title: "Employee Updates",
+                  //   onTap: () =>
+                  //       Get.to(() => const UpdatesFromEmployeeScreen()),
+                  // ),
+                  // const Divider(
+                  //   height: 0,
+                  //   thickness: 0.5,
+                  //   indent: 56,
+                  //   endIndent: 16,
+                  //   color: Color(0xFFE2E8F0),
+                  // ),
                   _buildDrawerTile(
                     icon: Icons.add_circle_rounded,
                     title: "Add New Project",
@@ -474,13 +472,13 @@ class _HostDashboardHomeScreenState extends State<HostDashboardHomeScreen> {
                 gradient: const [Color(0xFFF59E0B), Color(0xFFFBBF24)],
                 onTap: () => Get.to(() => const PendingTasksHostScreen()),
               ),
+
               _buildCompactActionCard(
                 icon: Icons.assignment_turned_in_rounded,
-                label: "Submit Tasks",
+                label: "Blockers",
                 gradient: const [Color(0xFF00796B), Color(0xFF26A69A)],
-                onTap: () {},
+                onTap: () => Get.to(() => const HostBlockersScreen()),
               ),
-
               const SizedBox(width: 8),
             ],
           ),

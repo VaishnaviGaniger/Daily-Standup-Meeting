@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get/get_instance/get_instance.dart';
+import 'package:get/utils.dart';
 import 'package:message_notifier/features/employees/controller/standup_history_controller.dart';
 
 class PendingTasksEmployeeScreen extends StatefulWidget {
@@ -15,12 +17,6 @@ class _PendingTasksEmployeeScreenState
   final StandupHistoryController _standupHistoryController = Get.put(
     StandupHistoryController(),
   );
-
-  @override
-  void initState() {
-    super.initState();
-    _standupHistoryController.fetchStandupHistory();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,8 +74,6 @@ class _PendingTasksEmployeeScreenState
               ),
             ),
           ),
-
-          // Body Section
           Expanded(
             child: Obx(() {
               final history = _standupHistoryController.history.value;
@@ -109,23 +103,27 @@ class _PendingTasksEmployeeScreenState
                         color: Color(0xFF00796B),
                       ),
                     ),
+                    const SizedBox(height: 4), // tighter under-title gap
 
                     pendingYesterday.isEmpty
                         ? const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 8),
+                            padding: EdgeInsets.only(bottom: 2), // minimal
                             child: Text(
                               "No pending tasks from yesterday.",
                               style: TextStyle(color: Colors.grey),
                             ),
                           )
                         : ListView.builder(
+                            padding: EdgeInsets.zero, // remove internal padding
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: pendingYesterday.length,
                             itemBuilder: (context, index) {
                               final task = pendingYesterday[index];
                               return Container(
-                                margin: const EdgeInsets.only(bottom: 10),
+                                margin: const EdgeInsets.only(
+                                  bottom: 4,
+                                ), // tighter
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(12),
@@ -182,8 +180,7 @@ class _PendingTasksEmployeeScreenState
                             },
                           ),
 
-                    const SizedBox(height: 20),
-
+                    const SizedBox(height: 10), // tighter gap between sections
                     // Today's Pending Tasks
                     const Text(
                       "Today's Pending Tasks",
@@ -193,23 +190,27 @@ class _PendingTasksEmployeeScreenState
                         color: Color(0xFF26A69A),
                       ),
                     ),
+                    const SizedBox(height: 4), // tighter under-title gap
 
                     pendingToday.isEmpty
                         ? const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 8),
+                            padding: EdgeInsets.only(bottom: 2), // minimal
                             child: Text(
                               "No pending tasks for today.",
                               style: TextStyle(color: Colors.grey),
                             ),
                           )
                         : ListView.builder(
+                            padding: EdgeInsets.zero, // remove internal padding
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: pendingToday.length,
                             itemBuilder: (context, index) {
                               final task = pendingToday[index];
                               return Container(
-                                margin: const EdgeInsets.only(bottom: 10),
+                                margin: const EdgeInsets.only(
+                                  bottom: 4,
+                                ), // tighter
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   borderRadius: BorderRadius.circular(12),

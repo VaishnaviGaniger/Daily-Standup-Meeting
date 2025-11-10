@@ -32,6 +32,34 @@ class _HostDashboardScreenState extends State<HostDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: currentIndex == 1
+          ? AppBar(
+              leading: IconButton(
+                onPressed: () {
+                  setState(() {
+                    currentIndex = 0;
+                  });
+                },
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                    size: 22,
+                  ),
+                ),
+              ),
+              title: Text("Standup History"),
+              centerTitle: true,
+              foregroundColor: Colors.white,
+              iconTheme: IconThemeData(color: Colors.white),
+              backgroundColor: AppColors.dark_teal,
+            )
+          : null,
       body: Container(
         width: double.infinity,
         height: double.infinity,

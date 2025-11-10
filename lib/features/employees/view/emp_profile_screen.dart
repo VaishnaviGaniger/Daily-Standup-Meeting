@@ -294,12 +294,18 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
                             _updateEmployeeProfileController.updateProfile(
                               update,
                             );
-                            Get.snackbar("Updated Successfully", "");
+                            Get.snackbar(
+                              "✅ Updated Successfully",
+                              "Address updated: ",
+                              snackPosition: SnackPosition.TOP,
+                              backgroundColor: Colors.green,
+                              colorText: AppColors.white,
+                            );
                           },
                         ),
                         const SizedBox(height: 18),
                         _buildTextField(
-                          label: 'Date of birth',
+                          label: 'Date of Registerion',
                           controller: dobController,
                           icon: Icons.calendar_today_outlined,
                           iconButton: Icons.edit,
@@ -309,7 +315,16 @@ class _EmployeeProfileScreenState extends State<EmployeeProfileScreen> {
                               _updateEmployeeProfileController.updateProfile(
                                 update,
                               );
-                              Get.snackbar("Successfully Updated", "");
+                              Get.snackbar(
+                                "Updated Successfully",
+                                "",
+                                snackPosition: SnackPosition.TOP,
+                                backgroundColor: Colors.green,
+                                colorText: Colors.white,
+                                margin: EdgeInsets.all(12),
+                                borderRadius: 10,
+                                duration: Duration(seconds: 2),
+                              );
                             }
                           },
                         ),

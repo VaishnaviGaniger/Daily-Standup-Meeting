@@ -34,104 +34,147 @@ class _NotificationScreenState extends State<HostNotificationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: const Text(
-          "Notifications",
-          style: TextStyle(
-            color: AppColors.white,
-            fontWeight: FontWeight.w700,
-            fontSize: 20,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: AppColors.rich_teal,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.white),
-          onPressed: () => Get.back(),
-        ),
-      ),
-      body: RefreshIndicator(
-        onRefresh: () => _meetingUpdateController.meetingupdates(),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header Section
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      "Upcoming Meetings",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF2C3E50),
-                        letterSpacing: 0.3,
+
+      body: Column(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF00796B), Color(0xFF26A69A)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
+              boxShadow: [
+                BoxShadow(
+                  color: Color(0x33000000),
+                  blurRadius: 12,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            child: SafeArea(
+              child: AppBar(
+                elevation: 0,
+                backgroundColor: Colors.transparent,
+                surfaceTintColor: Colors.transparent,
+                title: const Text(
+                  "Notificatons",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 20,
+                  ),
+                ),
+                centerTitle: true,
+                leading: Builder(
+                  builder: (context) => IconButton(
+                    icon: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(
+                        Icons.arrow_back_rounded,
+                        color: Colors.white,
+                        size: 22,
                       ),
                     ),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          RefreshIndicator(
+            onRefresh: () => _meetingUpdateController.meetingupdates(),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 15,
+                  vertical: 5,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Header Section
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          "Upcoming Meetings",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xFF2C3E50),
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                        Obx(
+                          () => _meetingUpdateController.meetings.isNotEmpty
+                              ? Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: AppColors.rich_teal.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: Text(
+                                    "${_meetingUpdateController.meetings.length}",
+                                    style: const TextStyle(
+                                      color: AppColors.rich_teal,
+                                      fontWeight: FontWeight.w700,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 14),
+
+                    // Meeting List Section
                     Obx(
-                      () => _meetingUpdateController.meetings.isNotEmpty
-                          ? Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: AppColors.rich_teal.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                "${_meetingUpdateController.meetings.length}",
-                                style: const TextStyle(
+                      () => _meetingUpdateController.isLoading.value
+                          ? const SizedBox(
+                              height: 200,
+                              child: Center(
+                                child: CircularProgressIndicator(
                                   color: AppColors.rich_teal,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 13,
                                 ),
                               ),
                             )
-                          : const SizedBox.shrink(),
+                          : _meetingUpdateController.meetings.isEmpty
+                          ? _buildEmptyState()
+                          : ListView.builder(
+                              itemCount:
+                                  _meetingUpdateController.meetings.length,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                final meeting =
+                                    _meetingUpdateController.meetings[index];
+                                return _buildMeetingCard(meeting, index);
+                              },
+                            ),
                     ),
+
+                    // Keep commented code untouched below
+                    // =============================================================
+                    // (Your commented code remains exactly as-is)
+                    // =============================================================
                   ],
                 ),
-
-                const SizedBox(height: 14),
-
-                // Meeting List Section
-                Obx(
-                  () => _meetingUpdateController.isLoading.value
-                      ? const SizedBox(
-                          height: 200,
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              color: AppColors.rich_teal,
-                            ),
-                          ),
-                        )
-                      : _meetingUpdateController.meetings.isEmpty
-                      ? _buildEmptyState()
-                      : ListView.builder(
-                          itemCount: _meetingUpdateController.meetings.length,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            final meeting =
-                                _meetingUpdateController.meetings[index];
-                            return _buildMeetingCard(meeting, index);
-                          },
-                        ),
-                ),
-
-                // Keep commented code untouched below
-                // =============================================================
-                // (Your commented code remains exactly as-is)
-                // =============================================================
-              ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -429,6 +472,7 @@ class _NotificationScreenState extends State<HostNotificationScreen> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: const Text("Please enter a reason."),
+
                     backgroundColor: Colors.red.shade400,
                     behavior: SnackBarBehavior.floating,
                     shape: RoundedRectangleBorder(

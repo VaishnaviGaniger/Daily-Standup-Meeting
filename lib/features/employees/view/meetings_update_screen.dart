@@ -4,10 +4,9 @@ import 'package:message_notifier/config/app_colors.dart';
 import 'package:message_notifier/features/employees/controller/emp_profile_controller.dart';
 import 'package:message_notifier/features/employees/controller/meeting_update_controller.dart';
 import 'package:message_notifier/features/employees/view/List_of_teammates_screen.dart';
-import 'package:message_notifier/features/employees/view/add_teammates_screen.dart';
 import 'package:message_notifier/features/employees/view/assign_tasks_screen.dart';
 import 'package:message_notifier/features/employees/view/emp_profile_screen.dart';
-import 'package:message_notifier/features/employees/view/notification_screen.dart';
+import 'package:message_notifier/features/employees/view/emp_notification_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:intl/intl.dart';
 
